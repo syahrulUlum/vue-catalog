@@ -29,6 +29,10 @@ const routes = [
     path: '/admin',
     redirect: '/admin/login'
   },
+  {
+    path: '/',
+    redirect: '/admin/user-refferal'
+  },
 ];
 
 const router = createRouter({

@@ -3,12 +3,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyDQmWIJzdhmNElqErdf1UwQ7QsECq4eIbM",
+  authDomain: "vue-catalog-f8ab4.firebaseapp.com",
+  projectId: "vue-catalog-f8ab4",
+  storageBucket: "vue-catalog-f8ab4.firebasestorage.app",
+  messagingSenderId: "823571673809",
+  appId: "1:823571673809:web:65ec95a4aff61b87f7cbf0",
 };
 
 const app = initializeApp(firebaseConfig);
