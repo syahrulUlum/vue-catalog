@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '@/pages/admin/Dashboard.vue';
-import Catalog from '@/pages/admin/Catalog.vue';
+import Product from '@/pages/admin/Product.vue';
 import Login from '@/pages/admin/Login.vue';
 import UserRefferal from '@/pages/admin/UserRefferal.vue';
+import NotFound from '@/NotFound.vue';
 
 const routes = [
   {
@@ -16,9 +17,9 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/admin/catalog',
-    name: 'Catalog',
-    component: Catalog
+    path: '/admin/product',
+    name: 'Product',
+    component: Product
   },
   {
     path: '/admin/user-refferal',
@@ -32,6 +33,11 @@ const routes = [
   {
     path: '/',
     redirect: '/admin/user-refferal'
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound,
   },
 ];
 

@@ -5,8 +5,8 @@
     <v-list density="compact" nav>
       <v-list-item :active="$route.name == 'Dashboard'" prepend-icon="mdi-view-dashboard" title="Dashboard"
         value="dashboard" to="/admin/dashboard"></v-list-item>
-      <v-list-item :active="$route.name == 'Catalog'" prepend-icon="mdi-forum" title="Katalog" value="katalog"
-        to="/admin/catalog"></v-list-item>
+      <v-list-item :active="$route.name == 'Product'" prepend-icon="mdi-forum" title="Katalog" value="katalog"
+        to="/admin/product"></v-list-item>
       <v-list-item :active="$route.name == 'UserRefferal'" prepend-icon="mdi-account-multiple" title="User Refferal"
         value="user-refferal" to="/admin/user-refferal"></v-list-item>
     </v-list>

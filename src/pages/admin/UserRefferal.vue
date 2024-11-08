@@ -46,7 +46,7 @@
                 <v-card :title="`${textModal} User Refferal`">
                     <v-card-text>
                         <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
-                            label="Nama" required @blur="v$.name.$touch" @input="convertSlug('name')"></v-text-field>
+                            label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
                         <v-text-field v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
                             label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
@@ -144,7 +144,7 @@ const openAddModal = () => {
     data.email = "";
     data.no_hp = "";
     data.alamat = "";
-    data.link = "";
+    data.link = generateLinkRef();
 };
 
 const openEditModal = (item) => {
@@ -186,25 +186,14 @@ const closeModal = () => {
 }
 
 const convertSlug = (type) => {
-    const str = type == "link" ? data.link : data.name;
-    let convert;
+    const str = data.link;
 
-    if (type == "link") {
-        convert = str
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '')
-            .replace(/^-+/, '')
-            .replace(/-+$/, '');
-    } else {
-        convert = str
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, "")
-            .replace(/[\s_-]+/g, "-")
-            .replace(/^-+/, "")
-            .replace(/-+$/, "");
-    }
+    const convert = str
+        .replace(/\s+/g, '-')
+        .replace(/[^a-zA-Z0-9-]/g, '')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+
 
     data.link = convert
 
@@ -221,6 +210,16 @@ const getDomain = computed(() => {
     const fullDomain = `${protocol}//${hostname}${port ? `:${port}` : ''}/refferal/`;
     return fullDomain;
 })
+
+const generateLinkRef = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 10; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+    }
+    return result;
+}
 // End Data
 //----------------------------------------------
 
