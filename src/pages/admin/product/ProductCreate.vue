@@ -20,6 +20,7 @@
                     label="Deskripsi" required @blur="v$.description.$touch"
                     @input="v$.description.$touch"></v-textarea>
 
+                <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
                 <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
                     <FileUpload @update-files="handleUpdatedFiles" />
                 </v-card>
@@ -40,7 +41,7 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import useVuelidate from '@vuelidate/core';
 import { numeric, required } from "@vuelidate/validators";
-import { nextTick, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
