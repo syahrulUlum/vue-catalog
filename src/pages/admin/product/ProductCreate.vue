@@ -20,14 +20,14 @@
                     label="Deskripsi" required @blur="v$.description.$touch"
                     @input="v$.description.$touch"></v-textarea>
 
-                <v-file-input required :error-messages="v$.images.$errors.map((e) => e.$message)" accept="image/*"
-                    label="Upload Gambar" prepend-icon="mdi-image" @change="handleImages"></v-file-input>
-                <v-card variant="outlined" class="pa-3">
+                <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
                     <FileUpload @update-files="handleUpdatedFiles" />
                 </v-card>
-                <ul>
-                    <li v-for="file in fileData">{{ file.file.name }}</li>
-                </ul>
+                <v-scroll-y-transition>
+                    <div class="mt-1 ml-4 text-danger" v-if="v$.images.$errors.length > 0">
+                        <small class="text-caption text-red-darken-4">{{ v$.images.$errors[0].$message }}</small>
+                    </div>
+                </v-scroll-y-transition>
             </v-card-text>
             <v-card-actions class="pa-6">
                 <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct"></v-btn>
@@ -62,38 +62,41 @@ const rules = reactive({
 
 const v$ = useVuelidate(rules, data);
 
-const selectedFiles = ref(null);
-const handleImages = (event) => {
-    const file = event.target.files[0];
-    selectedFiles.value = file;
+const handleUpdatedFiles = (files) => {
+    data.images = files.filter(f => f.file);
 };
 
+const loadCreate = ref(false);
 const createProduct = async () => {
     const isValid = await v$.value.$validate();
     if (!isValid) return
 
+    loadCreate.value = true;
     try {
-        let imageUrls = "";
+        let imageUrls = [];
 
         // Upload setiap file ke Firebase Storage
-        const file = selectedFiles.value
-        const extensionFile = file.name.split('.').pop()
-        const fileRef = storageRef(storage, `products/${generateRandomString()}.${extensionFile}`);
-        await uploadBytes(fileRef, file);
-        const url = await getDownloadURL(fileRef);
-        imageUrls = url;
+        for (const file of data.images) {
+            const extensionFile = file.file.name.split('.').pop()
+            const fileRef = storageRef(storage, `products/${generateRandomString()}.${extensionFile}`);
+            await uploadBytes(fileRef, file.file);
+            const url = await getDownloadURL(fileRef);
+            imageUrls.push(url.split('&token')[0]);
+        }
 
-        const image = imageUrls.split('&token')[0];
         // Simpan data ke Firestore
         await addDoc(collection(db, 'products'), {
             nama: data.nama,
             harga: data.harga,
-            images: image
+            description: data.description,
+            images: imageUrls
         });
 
         toast.success('Produk berhasil disimpan');
     } catch (error) {
-        console.error('Gagal menyimpan produk:', error);
+        toast.error('Gagal menyimpan produk:', error);
+    } finally {
+        loadCreate.value = false;
     }
 };
 
@@ -107,11 +110,5 @@ const generateRandomString = () => {
     return result;
 }
 
-const fileData = ref([]);
-
-// Fungsi untuk menangani file yang di-upload
-const handleUpdatedFiles = (files) => {
-    fileData.value = files.filter(f => f.file);;
-};
 
 </script>

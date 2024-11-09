@@ -1,14 +1,20 @@
 <template>
     <div id="upload-container">
+        <!-- Loop through the files array and generate upload boxes dynamically -->
         <div v-for="(file, index) in files" :key="index" class="upload-wrapper">
             <div class="upload-box">
+                <!-- File input (hidden), triggers by label or button -->
                 <input v-bind:id="'file-input-' + index" type="file" class="file-input" accept="image/*"
                     ref="fileInputs" @change="handleFileChange(index)" />
                 <label v-if="!file.preview" class="upload-button" :for="'file-input-' + index">
                     +
                 </label>
+
+                <!-- Display image preview if a file has been selected -->
                 <img v-if="file.preview" :src="file.preview" class="preview-image" style="display: block;" />
             </div>
+
+            <!-- Choose another file, remove file -->
             <div v-if="file.preview" class="actions">
                 <button @click="chooseAnotherFile(index)">Pilih File Lain</button>
                 <button @click="removeFile(index)">Hapus File</button>
@@ -18,11 +24,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
-const emit = defineEmits(['update-files']);
-const files = ref([{ preview: null, file: null }]);
+const emit = defineEmits();
+const props = defineProps({
+    initialFiles: Array // Prop for get old image
+});
 
+const files = ref(props.initialFiles?.map(img => ({ preview: img, file: null })) || [{ preview: null, file: null }]);
+
+// Handle file input change
 const handleFileChange = (index) => {
     const fileInput = document.getElementById(`file-input-${index}`);
     const file = fileInput.files[0];
@@ -30,34 +41,44 @@ const handleFileChange = (index) => {
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
+            // Update file preview and data
             files.value[index].preview = e.target.result;
             files.value[index].file = file;
+            // Emit the files array to the parent component
             emit('update-files', files.value);
+            // Automatically add a new upload box when a file is selected
             addNewUploadBox();
         };
         reader.readAsDataURL(file);
     }
 };
 
+// Add a new upload box if the previous one is filled
 const addNewUploadBox = () => {
     if (files.value[files.value.length - 1].file) {
         files.value.push({ preview: null, file: null });
     }
 };
 
+// Choose another file for the current upload box
 const chooseAnotherFile = (index) => {
     const fileInput = document.getElementById(`file-input-${index}`);
-    fileInput.click();
+    fileInput.click(); // Trigger file dialog
 };
 
+// Remove the selected file and its preview
 const removeFile = (index) => {
     files.value[index] = { preview: null, file: null };
     emit('update-files', files.value);
 
+    // If there's more than one box and no file, remove the box
     if (files.value.length > 1 && !files.value[index].file) {
         files.value.splice(index, 1);
     }
 };
+
+// Emit updated files on mount
+emit('update-files', files.value);
 </script>
 
 <style scoped>
@@ -103,10 +124,6 @@ const removeFile = (index) => {
 
 .upload-button:hover {
     background-color: #45a049;
-}
-
-.upload-button:focus {
-    outline: none;
 }
 
 .file-input {
