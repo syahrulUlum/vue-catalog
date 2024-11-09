@@ -1,7 +1,7 @@
 <template>
     <main-layout>
         <h2>Tambah Produk</h2>
-        <v-card class="mx-auto mt-2 pa-3 overflow-x-auto" elevation="6">
+        <v-card class="mx-auto mt-2 pa-1 overflow-x-auto" elevation="6">
             <v-card-title>
                 <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left"
                     variant="flat" :to="{ name: 'Product' }">Kembali</v-btn>
@@ -30,7 +30,7 @@
                 </v-scroll-y-transition>
             </v-card-text>
             <v-card-actions class="pa-6">
-                <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct"></v-btn>
+                <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate" :loading="loadCreate"></v-btn>
             </v-card-actions>
         </v-card>
     </main-layout>
@@ -39,8 +39,8 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import useVuelidate from '@vuelidate/core';
 import { numeric, required } from "@vuelidate/validators";
-import { reactive, ref, watch, watchEffect } from 'vue';
-import { collection, addDoc } from 'firebase/firestore';
+import { reactive, ref } from 'vue';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'vue3-toastify';
@@ -89,7 +89,8 @@ const createProduct = async () => {
             nama: data.nama,
             harga: data.harga,
             description: data.description,
-            images: imageUrls
+            images: imageUrls,
+            created_at: serverTimestamp(),
         });
 
         toast.success('Produk berhasil disimpan');
