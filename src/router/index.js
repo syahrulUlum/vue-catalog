@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '@/pages/admin/Dashboard.vue';
-import Product from '@/pages/admin/Product.vue';
+import Product from '@/pages/admin/product/Product.vue';
+import ProductCreate from '@/pages/admin/product/ProductCreate.vue';
+import ProductEdit from '@/pages/admin/product/ProductEdit.vue';
 import Login from '@/pages/admin/Login.vue';
 import UserRefferal from '@/pages/admin/UserRefferal.vue';
 import NotFound from '@/NotFound.vue';
@@ -18,8 +20,23 @@ const routes = [
   },
   {
     path: '/admin/product',
-    name: 'Product',
-    component: Product
+    children: [
+      {
+        path: "",
+        name: 'Product',
+        component: Product,
+      },
+      {
+        path: 'create',
+        name: 'ProductCreate',
+        component: ProductCreate,
+      },
+      {
+        path: 'edit/:id',
+        name: 'ProductEdit',
+        component: ProductEdit,
+      },
+    ]
   },
   {
     path: '/admin/user-refferal',

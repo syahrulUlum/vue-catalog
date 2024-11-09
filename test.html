@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic File Upload</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        #upload-container {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 20px;
+        }
+
+        .upload-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-box {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-button {
+            width: 50px;
+            height: 50px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-button:hover {
+            background-color: #45a049;
+        }
+
+        .upload-button:focus {
+            outline: none;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="upload-container">
+    <div class="upload-wrapper">
+        <div class="upload-box">
+            <input type="file" class="file-input" accept="image/*" id="file-input-1" onchange="handleFileChange(event)">
+            <label for="file-input-1" class="upload-button">+</label>
+            <img class="preview-image" style="display: none;">
+        </div>
+        <div class="actions" style="display: none;">
+            <button onclick="chooseAnotherFile(this)">Pilih File Lain</button>
+            <button onclick="removeFile(this)">Hapus File</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const uploadContainer = document.getElementById('upload-container');
+
+    function handleFileChange(event) {
+        const uploadBox = event.target.closest('.upload-box');
+        const uploadWrapper = uploadBox.parentElement;
+        const fileInput = uploadBox.querySelector('.file-input');
+        const previewImage = uploadBox.querySelector('.preview-image');
+        const uploadButton = uploadBox.querySelector('.upload-button');
+        const actions = uploadWrapper.querySelector('.actions');
+
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                uploadButton.style.display = 'none';
+                actions.style.display = 'flex';
+
+                addNewUploadBox();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function addNewUploadBox() {
+        const emptyBox = Array.from(uploadContainer.children).find(
+            wrapper => !wrapper.querySelector('.file-input').files.length
+        );
+
+        if (!emptyBox) {
+            const newWrapper = document.createElement('div');
+            const newId = `file-input-${uploadContainer.children.length + 1}`;
+            newWrapper.classList.add('upload-wrapper');
+            newWrapper.innerHTML = `
+                <div class="upload-box">
+                    <input type="file" class="file-input" accept="image/*" id="${newId}" onchange="handleFileChange(event)">
+                    <label for="${newId}" class="upload-button">+</label>
+                    <img class="preview-image" style="display: none;">
+                </div>
+                <div class="actions" style="display: none;">
+                    <button onclick="chooseAnotherFile(this)">Pilih File Lain</button>
+                    <button onclick="removeFile(this)">Hapus File</button>
+                </div>
+            `;
+            uploadContainer.appendChild(newWrapper);
+        }
+    }
+
+    function chooseAnotherFile(button) {
+        const uploadWrapper = button.closest('.upload-wrapper');
+        const fileInput = uploadWrapper.querySelector('.file-input');
+        fileInput.click();
+    }
+
+    function removeFile(button) {
+        const uploadWrapper = button.closest('.upload-wrapper');
+        const fileInput = uploadWrapper.querySelector('.file-input');
+        const previewImage = uploadWrapper.querySelector('.preview-image');
+        const uploadButton = uploadWrapper.querySelector('.upload-button');
+        const actions = uploadWrapper.querySelector('.actions');
+
+        fileInput.value = '';
+        previewImage.src = '';
+        previewImage.style.display = 'none';
+        uploadButton.style.display = 'flex';
+        uploadButton.style.display = 'flex';
+        actions.style.display = 'none';
+
+        if (uploadContainer.children.length > 1 && !fileInput.files.length) {
+            uploadContainer.removeChild(uploadWrapper);
+        }
+    }
+</script>
+
+</body>
+</html>

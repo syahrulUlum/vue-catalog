@@ -17,7 +17,7 @@
             <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
                 :filter-keys="['name', 'email', 'no_hp', 'link']" :items="items">
                 <template v-slot:loading>
-                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
                 </template>
 
                 <template v-slot:item.no="{ item }">
@@ -226,6 +226,9 @@ const generateLinkRef = () => {
 // Start CUD
 const loadSave = ref(false);
 const saveUserReferral = async () => {
+    const isValid = await v$.value.$validate();
+    if (!isValid) return
+
     loadSave.value = true;
     try {
         if (data.id) {
@@ -249,7 +252,7 @@ const saveUserReferral = async () => {
                     no_hp: data.no_hp,
                     alamat: data.alamat,
                     link: data.link,
-                    createdAt: serverTimestamp(),
+                    created_at: serverTimestamp(),
                 });
                 toast.success('User Refferal berhasil ditambahkan');
                 closeModal();
@@ -259,9 +262,9 @@ const saveUserReferral = async () => {
             }
 
         }
-        loadSave.value = false;
     } catch (error) {
         toast.error('Gagal menyimpan User Refferal');
+    } finally {
         loadSave.value = false;
     }
 };
@@ -274,10 +277,10 @@ const deleteUserReferral = async () => {
             await deleteDoc(doc(db, 'user_refferals', idDel.value));
             toast.success('User Refferal berhasil dihapus');
             fetchUserRef();
-            loadDelete.value = false;
             deleteModal.value = false
         } catch (error) {
             toast.error('Gagal menghapus User Refferal');
+        } finally {
             loadDelete.value = false;
         }
     } else {
@@ -308,7 +311,7 @@ const items = ref([]);
 const fetchUserRef = async () => {
     loading.value = true;
     try {
-        const q = query(collection(db, 'user_refferals'), orderBy('createdAt', 'desc'));
+        const q = query(collection(db, 'user_refferals'), orderBy('created_at', 'desc'));
         const querySnapshot = await getDocs(q);
 
         items.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
