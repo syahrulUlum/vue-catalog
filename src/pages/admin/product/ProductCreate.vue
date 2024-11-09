@@ -30,7 +30,8 @@
                 </v-scroll-y-transition>
             </v-card-text>
             <v-card-actions class="pa-6">
-                <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate" :loading="loadCreate"></v-btn>
+                <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
+                    :loading="loadCreate"></v-btn>
             </v-card-actions>
         </v-card>
     </main-layout>
@@ -39,12 +40,13 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import useVuelidate from '@vuelidate/core';
 import { numeric, required } from "@vuelidate/validators";
-import { reactive, ref } from 'vue';
+import { nextTick, reactive, ref } from 'vue';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'vue3-toastify';
 import FileUpload from '../../../components/FileUpload.vue';
+import { useRouter } from 'vue-router';
 
 const data = reactive({
     nama: "",
@@ -66,6 +68,7 @@ const handleUpdatedFiles = (files) => {
     data.images = files.filter(f => f.file);
 };
 
+const router = useRouter()
 const loadCreate = ref(false);
 const createProduct = async () => {
     const isValid = await v$.value.$validate();
@@ -93,7 +96,14 @@ const createProduct = async () => {
             created_at: serverTimestamp(),
         });
 
+        data.nama = '';
+        data.harga = null;
+        data.description = '';
+        data.images = null;
         toast.success('Produk berhasil disimpan');
+        setTimeout(() => {
+            router.push({ name: 'Product' });
+        }, 3000);
     } catch (error) {
         toast.error('Gagal menyimpan produk:', error);
     } finally {
