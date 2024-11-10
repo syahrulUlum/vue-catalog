@@ -28,7 +28,7 @@
 
         <template v-slot:item.action="{ item }">
           <div class="d-flex justify-center">
-            <v-btn class="ma-1" color="primary">Edit</v-btn>
+            <v-btn class="ma-1" color="primary" :to="{ name: 'ProductEdit', params: { id: item.id } }">Edit</v-btn>
             <v-btn class="ma-1" color="error" @click="openDeleteModal(item.id, item.nama)">Hapus</v-btn>
           </div>
         </template>
@@ -60,7 +60,7 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore";
 import { deleteObject, ref as storageRef } from 'firebase/storage';
 import { db, storage } from "@/firebaseConfig";
 

@@ -16,22 +16,42 @@
 
             <!-- Choose another file, remove file -->
             <div v-if="file.preview" class="actions">
-                <button @click="chooseAnotherFile(index)">Pilih File Lain</button>
-                <button @click="removeFile(index)">Hapus File</button>
+                <button class="edit-btn" @click="chooseAnotherFile(index)">Pilih File Lain</button>
+                <button class="delete-btn" @click="removeFile(index)">Hapus File</button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const emit = defineEmits();
 const props = defineProps({
     initialFiles: Array // Prop for get old image
 });
 
-const files = ref(props.initialFiles?.map(img => ({ preview: img, file: null })) || [{ preview: null, file: null }]);
+const files = ref([{ preview: null, file: null }]);
+
+const ensureEmptyUploadBox = () => {
+    if (!files.value.some(file => !file.file && !file.preview)) {
+        files.value.push({ preview: null, file: null });
+    }
+};
+// Watch untuk initialFiles dari parent
+watch(
+    () => props.initialFiles,
+    (newFiles) => {
+        if (newFiles && newFiles.length > 0) {
+            files.value = newFiles.map(file => ({
+                preview: file || null,
+                file: null
+            }));
+        }
+        ensureEmptyUploadBox();
+    },
+    { immediate: true }
+);
 
 // Handle file input change
 const handleFileChange = (index) => {
@@ -47,7 +67,7 @@ const handleFileChange = (index) => {
             // Emit the files array to the parent component
             emit('update-files', files.value);
             // Automatically add a new upload box when a file is selected
-            addNewUploadBox();
+            addNewUploadBox();            
         };
         reader.readAsDataURL(file);
     }
@@ -79,6 +99,10 @@ const removeFile = (index) => {
 
 // Emit updated files on mount
 emit('update-files', files.value);
+
+onMounted(() => {
+    ensureEmptyUploadBox();
+});
 </script>
 
 <style scoped>
@@ -97,7 +121,7 @@ emit('update-files', files.value);
 
 .upload-box {
     width: 200px;
-    height: 200px;
+    height: 150px;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
@@ -142,7 +166,6 @@ emit('update-files', files.value);
 }
 
 .actions button {
-    background-color: #007bff;
     border: none;
     color: white;
     padding: 8px;
@@ -150,7 +173,19 @@ emit('update-files', files.value);
     cursor: pointer;
 }
 
-.actions button:hover {
+.actions .edit-btn:hover {
     background-color: #0056b3;
+}
+
+.actions .edit-btn {
+    background-color: #007bff;
+}
+
+.actions .delete-btn {
+    background-color: #ff0000;
+}
+
+.actions .delete-btn:hover {
+    background-color: #b40000;
 }
 </style>
