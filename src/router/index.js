@@ -6,6 +6,8 @@ import ProductEdit from '@/pages/admin/product/ProductEdit.vue';
 import Login from '@/pages/admin/Login.vue';
 import UserRefferal from '@/pages/admin/UserRefferal.vue';
 import NotFound from '@/NotFound.vue';
+import Catalog from '@/pages/catalog/Catalog.vue';
+import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
 
 const routes = [
   {
@@ -48,8 +50,19 @@ const routes = [
     redirect: '/admin/login'
   },
   {
-    path: '/',
-    redirect: '/admin/user-refferal'
+    path: '/catalogs',
+    children: [
+      {
+        path: "",
+        name: 'Catalogs',
+        component: Catalog,
+      },
+      {
+        path: "detail/:id",
+        name: 'CatalogDetail',
+        component: CatalogDetail,
+      },
+    ],
   },
   {
     path: '/:catchAll(.*)',
