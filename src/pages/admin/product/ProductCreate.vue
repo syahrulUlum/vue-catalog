@@ -10,11 +10,11 @@
             <v-divider></v-divider>
 
             <v-card-text class="mt-3">
-                <v-text-field v-model="data.nama" :error-messages="v$.nama.$errors.map((e) => e.$message)" label="Nama"
-                    required @blur="v$.nama.$touch" @input="v$.nama.$touch"></v-text-field>
+                <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
+                    required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
-                <v-text-field v-model="data.harga" :error-messages="v$.harga.$errors.map((e) => e.$message)"
-                    label="Harga" required @blur="v$.harga.$touch" @input="v$.harga.$touch"></v-text-field>
+                <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)"
+                    label="Harga" required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
 
                 <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
                     label="Deskripsi" required @blur="v$.description.$touch"
@@ -50,15 +50,15 @@ import FileUpload from '../../../components/FileUpload.vue';
 import { useRouter } from 'vue-router';
 
 const data = reactive({
-    nama: "",
-    harga: null,
+    name: "",
+    price: null,
     description: "",
     images: null,
 });
 
 const rules = reactive({
-    nama: { required },
-    harga: { required, numeric },
+    name: { required },
+    price: { required, numeric },
     description: { required },
     images: { required }
 });
@@ -90,15 +90,15 @@ const createProduct = async () => {
 
         // Simpan data ke Firestore
         await addDoc(collection(db, 'products'), {
-            nama: data.nama,
-            harga: data.harga,
+            name: data.name,
+            price: data.price,
             description: data.description,
             images: imageUrls,
             created_at: serverTimestamp(),
         });
 
-        data.nama = '';
-        data.harga = null;
+        data.name = '';
+        data.price = null;
         data.description = '';
         data.images = null;
         toast.success('Produk berhasil disimpan');

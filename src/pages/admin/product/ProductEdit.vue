@@ -1,6 +1,6 @@
 <template>
     <main-layout>
-        <h2>Edit Produk {{ data.nama }}</h2>
+        <h2>Edit Produk {{ data.name }}</h2>
         <v-card class="mx-auto mt-2 pa-1 overflow-x-auto" elevation="6">
             <v-card-title>
                 <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left"
@@ -10,11 +10,11 @@
             <v-divider></v-divider>
 
             <v-card-text class="mt-3">
-                <v-text-field v-model="data.nama" :error-messages="v$.nama.$errors.map((e) => e.$message)" label="Nama"
-                    required @blur="v$.nama.$touch" @input="v$.nama.$touch"></v-text-field>
+                <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
+                    required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
-                <v-text-field v-model="data.harga" :error-messages="v$.harga.$errors.map((e) => e.$message)"
-                    label="Harga" required @blur="v$.harga.$touch" @input="v$.harga.$touch"></v-text-field>
+                <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)"
+                    label="Harga" required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
 
                 <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
                     label="Deskripsi" required @blur="v$.description.$touch"
@@ -50,15 +50,15 @@ import FileUpload from '@/components/FileUpload.vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const data = reactive({
-    nama: "",
-    harga: null,
+    name: "",
+    price: null,
     description: "",
     images: null,
 });
 
 const rules = reactive({
-    nama: { required },
-    harga: { required, numeric },
+    name: { required },
+    price: { required, numeric },
     description: { required },
     images: { required }
 });
@@ -76,8 +76,8 @@ const getData = async () => {
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-        data.nama = docSnap.data().nama;
-        data.harga = docSnap.data().harga;
+        data.name = docSnap.data().name;
+        data.price = docSnap.data().price;
         data.description = docSnap.data().description;
         data.images = docSnap.data().images || null;
         existingImage.value = docSnap.data().images || null;
@@ -136,14 +136,14 @@ const updateProduct = async () => {
         // Simpan data terbaru ke Firestore
         const ProductRef = doc(db, 'products', id);
         await updateDoc(ProductRef, {
-            nama: data.nama,
-            harga: data.harga,
+            name: data.name,
+            price: data.price,
             description: data.description,
             images: imageUrls,
         });
 
-        data.nama = '';
-        data.harga = null;
+        data.name = '';
+        data.price = null;
         data.description = '';
         data.images = null;
         toast.success('Produk berhasil diperbarui');

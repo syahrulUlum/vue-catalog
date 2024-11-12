@@ -14,8 +14,8 @@
             </v-col>
             <v-col cols="12" sm="12" md="6">
                 <v-sheet class="mt-6 ml-4">
-                    <h1>{{ data.nama }}</h1>
-                    <h2>{{ formatRupiah(data.harga) }}</h2>
+                    <h1>{{ data.name }}</h1>
+                    <h2>{{ formatRupiah(data.price) }}</h2>
                     <p class="text-h6 mt-4">Deskripsi</p>
                     <p>{{ data.description }}</p>
                     <v-btn @click="openOrderModal" class="mt-4" color="blue-darken-3" prepend-icon="mdi-cart"
@@ -26,7 +26,7 @@
 
         <!-- Start Modal -->
         <v-dialog v-model="orderModal" max-width="600" persistent>
-            <v-card :title="`Order ${data.nama}`">
+            <v-card :title="`Order ${data.name}`">
                 <v-card-text>
                     <v-alert class="mb-3" text="Isi data berikut untuk membeli produk" type="warning"></v-alert>
                     <v-text-field v-model="orderData.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
@@ -69,8 +69,8 @@ import { email, required, numeric } from "@vuelidate/validators";
 import { toast } from 'vue3-toastify';
 
 const data = reactive({
-    nama: "",
-    harga: null,
+    name: "",
+    price: null,
     description: "",
     images: null,
 });
@@ -83,8 +83,8 @@ const getData = async () => {
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-        data.nama = docSnap.data().nama;
-        data.harga = docSnap.data().harga;
+        data.name = docSnap.data().name;
+        data.price = docSnap.data().price;
         data.description = docSnap.data().description;
         data.images = docSnap.data().images || null;
 

@@ -12,7 +12,7 @@
           variant="solo-filled" flat hide-details single-line></v-text-field>
       </v-card-title>
 
-      <v-data-table :loading="loading" v-model:search="search" :headers="headerTable" :filter-keys="['nama', 'harga']"
+      <v-data-table :loading="loading" v-model:search="search" :headers="headerTable" :filter-keys="['name', 'price']"
         :items="items">
         <template v-slot:loading>
           <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
@@ -22,14 +22,14 @@
           {{ items.indexOf(item) + 1 }}
         </template>
 
-        <template v-slot:item.harga="{ item }">
-          {{ formatRupiah(item.harga) }}
+        <template v-slot:item.price="{ item }">
+          {{ formatRupiah(item.price) }}
         </template>
 
         <template v-slot:item.action="{ item }">
           <div class="d-flex justify-center">
             <v-btn class="ma-1" color="primary" :to="{ name: 'ProductEdit', params: { id: item.id } }">Edit</v-btn>
-            <v-btn class="ma-1" color="error" @click="openDeleteModal(item.id, item.nama)">Hapus</v-btn>
+            <v-btn class="ma-1" color="error" @click="openDeleteModal(item.id, item.name)">Hapus</v-btn>
           </div>
         </template>
       </v-data-table>
@@ -40,7 +40,7 @@
           <v-card-text>
             <div class="text-center pa-2">
               <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
-              <p class="mt-2">Apakah anda yakin ingin menghapus Produk <strong>{{ namaDel
+              <p class="mt-2">Apakah anda yakin ingin menghapus Produk <strong>{{ nameDel
                   }}</strong> ?</p>
             </div>
           </v-card-text>
@@ -68,8 +68,8 @@ const search = ref("");
 const loading = ref(false);
 const headerTable = ref([
   { key: 'no', sortable: false, title: 'No' },
-  { key: 'nama', title: 'Nama' },
-  { key: 'harga', title: 'Harga' },
+  { key: 'name', title: 'Nama' },
+  { key: 'price', title: 'Harga' },
   { key: 'action', title: 'Aksi', sortable: false, align: 'center' },
 
 ])
@@ -102,17 +102,17 @@ onMounted(() => {
   fetchProduk();
 })
 
-const namaDel = ref("");
+const nameDel = ref("");
 const idDel = ref(null)
 const deleteModal = ref(false)
 const openDeleteModal = (id, name) => {
-  namaDel.value = name;
+  nameDel.value = name;
   idDel.value = id;
   deleteModal.value = true
 }
 
 const closeDeleteModal = () => {
-  namaDel.value = "";
+  nameDel.value = "";
   idDel.value = null
   deleteModal.value = false
 }

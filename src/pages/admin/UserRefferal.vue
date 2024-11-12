@@ -15,7 +15,7 @@
 
             <v-divider></v-divider>
             <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
-                :filter-keys="['name', 'email', 'no_hp', 'link']" :items="items" class="all-border">
+                :filter-keys="['name', 'email', 'telp', 'link']" :items="items" class="all-border">
                 <template v-slot:loading>
                     <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
                 </template>
@@ -51,11 +51,11 @@
                         <v-text-field v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
                             label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
 
-                        <v-text-field v-model="data.no_hp" :error-messages="v$.no_hp.$errors.map((e) => e.$message)"
-                            label="No Hp" required @blur="v$.no_hp.$touch" @input="v$.no_hp.$touch"></v-text-field>
+                        <v-text-field v-model="data.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
+                            label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
 
-                        <v-textarea v-model="data.alamat" :error-messages="v$.alamat.$errors.map((e) => e.$message)"
-                            label="Alamat" required @blur="v$.alamat.$touch" @input="v$.alamat.$touch"></v-textarea>
+                        <v-textarea v-model="data.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
+                            label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
 
                         <!-- disable jika edit -->
                         <v-text-field label="Link Referral" v-model="data.link" :prefix="getDomain" readonly
@@ -119,16 +119,16 @@ const data = reactive({
     id: null,
     name: "",
     email: "",
-    no_hp: "",
-    alamat: "",
+    telp: "",
+    address: "",
     link: ""
 });
 
 const rules = reactive({
     name: { required },
     email: { required, email },
-    no_hp: { required, numeric },
-    alamat: { required },
+    telp: { required, numeric },
+    address: { required },
     link: { required },
 });
 
@@ -142,16 +142,16 @@ const openAddModal = () => {
     data.id = null;
     data.name = "";
     data.email = "";
-    data.no_hp = "";
-    data.alamat = "";
+    data.telp = "";
+    data.address = "";
     data.link = generateLinkRef();
 };
 
 const openEditModal = (item) => {
     data.name = item.name;
     data.email = item.email;
-    data.no_hp = item.no_hp;
-    data.alamat = item.alamat;
+    data.telp = item.telp;
+    data.address = item.address;
     data.link = item.link;
     data.id = item.id
 
@@ -180,8 +180,8 @@ const closeModal = () => {
     data.id = null;
     data.name = "";
     data.email = "";
-    data.no_hp = "";
-    data.alamat = "";
+    data.telp = "";
+    data.address = "";
     data.link = "";
 }
 
@@ -236,8 +236,8 @@ const saveUserReferral = async () => {
             await updateDoc(UserRef, {
                 name: data.name,
                 email: data.email,
-                no_hp: data.no_hp,
-                alamat: data.alamat
+                telp: data.telp,
+                address: data.address
             });
             toast.success('User Refferal berhasil diperbarui');
         } else {
@@ -249,8 +249,8 @@ const saveUserReferral = async () => {
                 await addDoc(collection(db, 'user_refferals'), {
                     name: data.name,
                     email: data.email,
-                    no_hp: data.no_hp,
-                    alamat: data.alamat,
+                    telp: data.telp,
+                    address: data.address,
                     link: data.link,
                     created_at: serverTimestamp(),
                 });
@@ -300,8 +300,8 @@ const headerTable = ref([
     { key: 'no', sortable: false, title: 'No' },
     { key: 'name', title: 'Nama' },
     { key: 'email', title: 'Email' },
-    { key: 'alamat', title: 'Alamat' },
-    { key: 'no_hp', title: 'No Hp' },
+    { key: 'address', title: 'Alamat' },
+    { key: 'telp', title: 'No Hp' },
     { key: 'link', title: 'link' },
     { key: 'action', title: 'Aksi', sortable: false },
 

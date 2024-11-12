@@ -1,6 +1,8 @@
 <template>
     <user-layout>
-        <v-sheet class="d-flex flex-wrap" style="gap: 18px">
+        <v-empty-state v-if="items.length < 1" title="Produk kosong"
+            text="Saat ini produk tidak tersedia"></v-empty-state>
+        <v-sheet v-else class="d-flex flex-wrap" style="gap: 18px">
             <v-sheet v-for="item in items" :key="item">
                 <v-card elevation="6" :loading="loading" class="mx-auto" width="275">
                     <template v-slot:loader="{ isActive }">
@@ -15,9 +17,9 @@
                     <v-img height="230" :src="item.images[0]" cover></v-img>
 
                     <v-card-item>
-                        <v-card-title>{{ item.nama }}</v-card-title>
+                        <v-card-title>{{ item.name }}</v-card-title>
                         <div class="text-subtitle-1">
-                            {{ formatRupiah(item.harga) }}
+                            {{ formatRupiah(item.price) }}
                         </div>
                     </v-card-item>
 
