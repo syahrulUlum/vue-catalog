@@ -15,7 +15,7 @@
 
             <v-divider></v-divider>
             <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
-                :filter-keys="['name', 'email', 'no_hp', 'link']" :items="items">
+                :filter-keys="['name', 'email', 'no_hp', 'link']" :items="items" class="all-border">
                 <template v-slot:loading>
                     <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
                 </template>
@@ -107,7 +107,7 @@
 import MainLayout from "@/layouts/MainLayout.vue";
 import { computed, onMounted, reactive, ref } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { email, required } from "@vuelidate/validators";
+import { email, required, numeric } from "@vuelidate/validators";
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { toast } from "vue3-toastify";
@@ -127,7 +127,7 @@ const data = reactive({
 const rules = reactive({
     name: { required },
     email: { required, email },
-    no_hp: { required },
+    no_hp: { required, numeric },
     alamat: { required },
     link: { required },
 });
@@ -337,4 +337,5 @@ onMounted(() => {
 .v-data-table-header__content {
     font-weight: 600;
 }
+
 </style>

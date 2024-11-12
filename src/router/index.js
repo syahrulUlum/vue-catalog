@@ -8,6 +8,7 @@ import UserRefferal from '@/pages/admin/UserRefferal.vue';
 import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
 import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
+import Order from '@/pages/Order.vue';
 
 const routes = [
   {
@@ -63,6 +64,11 @@ const routes = [
         component: CatalogDetail,
       },
     ],
+  },
+  {
+    path: '/order/:id',
+    name: 'Order',
+    component: Order
   },
   {
     path: '/:catchAll(.*)',

@@ -33,13 +33,10 @@
 </template>
 <script setup>
 import UserLayout from '@/layouts/UserLayout.vue';
-
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
-
-
 
 const loading = ref(false);
 const formatRupiah = (amount) => {
