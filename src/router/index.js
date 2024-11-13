@@ -9,17 +9,21 @@ import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
 import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
 import Order from '@/pages/Order.vue';
+import { requireAuth } from '@/middlewares/authMiddleware';
+import { requireGuest } from '@/middlewares/guestMiddleware';
 
 const routes = [
   {
     path: '/admin/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    beforeEnter: requireGuest
   },
   {
     path: '/admin/dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: Dashboard,
+    beforeEnter: requireAuth
   },
   {
     path: '/admin/product',
@@ -28,23 +32,27 @@ const routes = [
         path: "",
         name: 'Product',
         component: Product,
+        beforeEnter: requireAuth
       },
       {
         path: 'create',
         name: 'ProductCreate',
         component: ProductCreate,
+        beforeEnter: requireAuth
       },
       {
         path: 'edit/:id',
         name: 'ProductEdit',
         component: ProductEdit,
+        beforeEnter: requireAuth
       },
     ]
   },
   {
     path: '/admin/user-refferal',
     name: 'UserRefferal',
-    component: UserRefferal
+    component: UserRefferal,
+    beforeEnter: requireAuth
   },
   {
     path: '/admin',
