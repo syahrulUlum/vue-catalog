@@ -11,8 +11,15 @@ import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
 import Order from '@/pages/Order.vue';
 import { requireAuth } from '@/middlewares/authMiddleware';
 import { requireGuest } from '@/middlewares/guestMiddleware';
+import { requireRef } from '@/middlewares/refMiddleware';
+import useCheckRef from '@/composables/useCheckRef';
 
 const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    beforeEnter: requireRef
+  },
   {
     path: '/admin/login',
     name: 'Login',
@@ -65,13 +72,29 @@ const routes = [
         path: "",
         name: 'Catalogs',
         component: Catalog,
+        beforeEnter: requireRef
       },
       {
         path: "detail/:id",
         name: 'CatalogDetail',
         component: CatalogDetail,
+        beforeEnter: requireRef
       },
     ],
+  },
+  {
+    path: '/refferal/:id',
+    name: 'Refferal',
+    beforeEnter: async (to, from, next) => {
+      const id = to.params.id;
+      const { userRef, getRef } = useCheckRef();
+      await getRef(id);
+      if (id && userRef.value) {
+        return next({ name: "Catalogs" });
+      } else {
+        next("/not-found");
+      }
+    }
   },
   {
     path: '/order/:id',

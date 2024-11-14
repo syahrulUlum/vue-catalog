@@ -47,7 +47,8 @@ const useAuth = () => {
         const session = JSON.parse(localStorage.getItem('user'));
         if (session) {
             const currentTime = new Date().getTime();
-            if (currentTime > session.expirationTime) {
+            const expTime = new Date(session.expirationTime).getTime();
+            if (currentTime > expTime) {
                 await logout();
             } else {
                 user.value = auth.currentUser;

@@ -1,8 +1,6 @@
 <template>
     <user-layout>
-        <v-empty-state v-if="items.length < 1" title="Produk kosong"
-            text="Saat ini produk tidak tersedia"></v-empty-state>
-        <v-sheet v-else class="d-flex flex-wrap" style="gap: 18px">
+        <v-sheet v-if="items.length > 0" class="d-flex flex-wrap" style="gap: 18px">
             <v-sheet v-for="item in items" :key="item">
                 <v-card elevation="6" :loading="loading" class="mx-auto" width="275">
                     <template v-slot:loader="{ isActive }">
@@ -31,6 +29,8 @@
                 </v-card>
             </v-sheet>
         </v-sheet>
+        <v-empty-state v-if="items.length <= 0 && !loading" title="Produk kosong" text="Saat ini produk tidak tersedia"></v-empty-state>
+
     </user-layout>
 </template>
 <script setup>
