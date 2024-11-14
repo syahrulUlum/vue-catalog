@@ -1,5 +1,5 @@
 <template>
-    <user-layout>
+    <user-layout v-if="checkData">
         <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left" variant="flat"
             :to="{ name: 'Catalogs' }">Kembali</v-btn>
 
@@ -56,6 +56,8 @@
         </v-dialog>
         <!-- End Modal -->
     </user-layout>
+    <v-empty-state v-else headline="Whoops, 404" title="Product not found"
+        text="The product you were looking for does not exist"></v-empty-state>
 </template>
 <script setup>
 import UserLayout from '@/layouts/UserLayout.vue';
@@ -67,6 +69,7 @@ import { useDisplay } from 'vuetify';
 import { useVuelidate } from "@vuelidate/core";
 import { email, required, numeric } from "@vuelidate/validators";
 import { toast } from 'vue3-toastify';
+import useCheckRef from '@/composables/useCheckRef';
 
 const data = reactive({
     name: "",
@@ -78,6 +81,7 @@ const refId = ref(null);
 
 const route = useRoute()
 const router = useRouter()
+const checkData = ref(false)
 const getData = async () => {
     const id = route.params.id;
     const docRef = doc(db, "products", id);
@@ -87,10 +91,9 @@ const getData = async () => {
         data.price = docSnap.data().price;
         data.description = docSnap.data().description;
         data.images = docSnap.data().images || null;
-
+        checkData.value = true
     } else {
-        // redirect 404
-        router.push('/not-found')
+        checkData.value = false
     }
 };
 onMounted(() => {
@@ -162,11 +165,19 @@ const loadOrder = ref(false);
 const orderProduct = async () => {
     const isValid = await v$.value.$validate();
     if (!isValid) return
-
-
     loadOrder.value = true;
     try {
+        const { userRef, getRef } = useCheckRef();
+        await getRef(refId.value);
+        if (!userRef.value) {
+            toast.error("Link refferal tidak valid");
+            return
+        }
+
+        const getCode = generateCode()
+
         await addDoc(collection(db, 'transactions'), {
+            code: getCode,
             name: orderData.name,
             email: orderData.email,
             telp: orderData.telp,
@@ -176,12 +187,26 @@ const orderProduct = async () => {
             status: 0,
             created_at: serverTimestamp(),
         });
-        toast.success('Anda berhasil membeli produk ini');
+        router.push('/transaction/' + getCode);
         closeOrderModal();
     } catch (error) {
         toast.error('Gagal membeli produk ini: ');
     } finally {
         loadOrder.value = false;
     }
+}
+
+const generateCode = () => {
+    const randomNumber = Math.floor(10000 + Math.random() * 90000);
+
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}${month}${day}`;
+
+    return `CS${formattedDate}${randomNumber}`;
 }
 </script>

@@ -8,7 +8,7 @@ import UserRefferal from '@/pages/admin/UserRefferal.vue';
 import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
 import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
-import Order from '@/pages/Order.vue';
+import UserTransaction from '@/pages/UserTransaction.vue';
 import { requireAuth } from '@/middlewares/authMiddleware';
 import { requireGuest } from '@/middlewares/guestMiddleware';
 import { requireRef } from '@/middlewares/refMiddleware';
@@ -97,9 +97,9 @@ const routes = [
     }
   },
   {
-    path: '/order/:id',
-    name: 'Order',
-    component: Order
+    path: '/transaction/:id',
+    name: 'UserTransaction',
+    component: UserTransaction
   },
   {
     path: '/:catchAll(.*)',
