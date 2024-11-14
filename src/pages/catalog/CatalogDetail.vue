@@ -170,7 +170,7 @@ const orderProduct = async () => {
         const { userRef, getRef } = useCheckRef();
         await getRef(refId.value);
         if (!userRef.value) {
-            toast.error("Link refferal tidak valid");
+            toast.error("Link referral tidak valid");
             return
         }
 

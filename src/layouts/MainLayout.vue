@@ -7,8 +7,8 @@
         value="dashboard" to="/admin/dashboard"></v-list-item>
       <v-list-item :active="['Product', 'ProductCreate', 'ProductEdit'].includes($route.name)"
         prepend-icon="mdi-package-variant-closed" title="Produk" value="katalog" to="/admin/product"></v-list-item>
-      <v-list-item :active="$route.name == 'UserRefferal'" prepend-icon="mdi-account-multiple" title="User Refferal"
-        value="user-refferal" to="/admin/user-refferal"></v-list-item>
+      <v-list-item :active="$route.name == 'UserReferral'" prepend-icon="mdi-account-multiple" title="User Referral"
+        value="user-referral" to="/admin/user-referral"></v-list-item>
     </v-list>
 
     <template v-slot:append>

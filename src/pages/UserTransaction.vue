@@ -58,7 +58,7 @@
                         <td>{{ formatDate(data.created_at) }}</td>
                     </tr>
                     <tr>
-                        <td>Kode Referensi</td>
+                        <td>Kode Referral</td>
                         <td>:</td>
                         <td>{{ data.ref_id }}</td>
                     </tr>

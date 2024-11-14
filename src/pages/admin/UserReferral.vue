@@ -1,9 +1,9 @@
 <template>
     <main-layout>
-        <h2>User Refferal</h2>
+        <h2>User Referral</h2>
         <v-card class="mx-auto mt-2 pa-3 overflow-x-auto" elevation="6">
             <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-plus" variant="flat"
-                @click="openAddModal()">Tambah User Refferal</v-btn>
+                @click="openAddModal()">Tambah User Referral</v-btn>
 
             <!-- Table -->
             <v-card-title class="d-flex align-center pe-2">
@@ -43,7 +43,7 @@
 
             <!-- Start Modal -->
             <v-dialog v-model="dialog" max-width="600" persistent>
-                <v-card :title="`${textModal} User Refferal`">
+                <v-card :title="`${textModal} User Referral`">
                     <v-card-text>
                         <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
                             label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
@@ -85,7 +85,7 @@
                     <v-card-text>
                         <div class="text-center pa-2">
                             <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
-                            <p class="mt-2">Apakah anda yakin ingin menghapus User Refferal <strong>{{ nameDel
+                            <p class="mt-2">Apakah anda yakin ingin menghapus User Referral <strong>{{ nameDel
                                     }}</strong> ?</p>
                         </div>
                     </v-card-text>
@@ -207,7 +207,7 @@ const getDomain = computed(() => {
     const hostname = window.location.hostname;
     const port = window.location.port;
 
-    const fullDomain = `${protocol}//${hostname}${port ? `:${port}` : ''}/refferal/`;
+    const fullDomain = `${protocol}//${hostname}${port ? `:${port}` : ''}/referral/`;
     return fullDomain;
 })
 
@@ -232,21 +232,21 @@ const saveUserReferral = async () => {
     loadSave.value = true;
     try {
         if (data.id) {
-            const UserRef = doc(db, 'user_refferals', data.id);
+            const UserRef = doc(db, 'user_referrals', data.id);
             await updateDoc(UserRef, {
                 name: data.name,
                 email: data.email,
                 telp: data.telp,
                 address: data.address
             });
-            toast.success('User Refferal berhasil diperbarui');
+            toast.success('User Referral berhasil diperbarui');
         } else {
-            const queryUserLink = query(collection(db, 'user_refferals'), where('link', '==', data.link));
+            const queryUserLink = query(collection(db, 'user_referrals'), where('link', '==', data.link));
             const getUserLink = await getDocs(queryUserLink);
 
             // cek apakah link sudah ada yang menggunakan
             if (getUserLink.empty) {
-                await addDoc(collection(db, 'user_refferals'), {
+                await addDoc(collection(db, 'user_referrals'), {
                     name: data.name,
                     email: data.email,
                     telp: data.telp,
@@ -254,7 +254,7 @@ const saveUserReferral = async () => {
                     link: data.link,
                     created_at: serverTimestamp(),
                 });
-                toast.success('User Refferal berhasil ditambahkan');
+                toast.success('User Referral berhasil ditambahkan');
                 closeModal();
                 fetchUserRef();
             } else {
@@ -263,7 +263,7 @@ const saveUserReferral = async () => {
 
         }
     } catch (error) {
-        toast.error('Gagal menyimpan User Refferal');
+        toast.error('Gagal menyimpan User Referral');
     } finally {
         loadSave.value = false;
     }
@@ -274,17 +274,17 @@ const deleteUserReferral = async () => {
     if (idDel.value) {
         loadDelete.value = true;
         try {
-            await deleteDoc(doc(db, 'user_refferals', idDel.value));
-            toast.success('User Refferal berhasil dihapus');
+            await deleteDoc(doc(db, 'user_referrals', idDel.value));
+            toast.success('User Referral berhasil dihapus');
             fetchUserRef();
             deleteModal.value = false
         } catch (error) {
-            toast.error('Gagal menghapus User Refferal');
+            toast.error('Gagal menghapus User Referral');
         } finally {
             loadDelete.value = false;
         }
     } else {
-        toast.error('User Refferal tidak ditemukan');
+        toast.error('User Referral tidak ditemukan');
         loadDelete.value = false;
         deleteModal.value = false
     }
@@ -311,13 +311,13 @@ const items = ref([]);
 const fetchUserRef = async () => {
     loading.value = true;
     try {
-        const q = query(collection(db, 'user_refferals'), orderBy('created_at', 'desc'));
+        const q = query(collection(db, 'user_referrals'), orderBy('created_at', 'desc'));
         const querySnapshot = await getDocs(q);
 
         items.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         loading.value = false;
     } catch (error) {
-        toast.error('Gagal mengambil data User Refferal');
+        toast.error('Gagal mengambil data User Referral');
         loading.value = false;
     }
 };
@@ -337,5 +337,4 @@ onMounted(() => {
 .v-data-table-header__content {
     font-weight: 600;
 }
-
 </style>

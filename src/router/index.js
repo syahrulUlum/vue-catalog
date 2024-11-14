@@ -4,7 +4,7 @@ import Product from '@/pages/admin/product/Product.vue';
 import ProductCreate from '@/pages/admin/product/ProductCreate.vue';
 import ProductEdit from '@/pages/admin/product/ProductEdit.vue';
 import Login from '@/pages/admin/Login.vue';
-import UserRefferal from '@/pages/admin/UserRefferal.vue';
+import UserReferral from '@/pages/admin/UserReferral.vue';
 import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
 import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
@@ -56,9 +56,9 @@ const routes = [
     ]
   },
   {
-    path: '/admin/user-refferal',
-    name: 'UserRefferal',
-    component: UserRefferal,
+    path: '/admin/user-referral',
+    name: 'UserReferral',
+    component: UserReferral,
     beforeEnter: requireAuth
   },
   {
@@ -83,8 +83,8 @@ const routes = [
     ],
   },
   {
-    path: '/refferal/:id',
-    name: 'Refferal',
+    path: '/referral/:id',
+    name: 'Referral',
     beforeEnter: async (to, from, next) => {
       const id = to.params.id;
       const { userRef, getRef } = useCheckRef();
