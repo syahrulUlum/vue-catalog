@@ -1,59 +1,68 @@
 <template>
   <main-layout>
-    <h2>Produk</h2>
-    <v-card class="mx-auto mt-2 pa-3 overflow-x-auto" elevation="6">
-      <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-plus" variant="flat"
+    <div class="d-flex align-center text-subtitle-1 text-medium-emphasis">
+      <span>Produk</span>
+      <v-icon icon="mdi-chevron-right"></v-icon>
+      <span>List</span>
+    </div>
+    <div class="d-flex align-center justify-space-between">
+      <h4 class="text-h4 font-weight-bold">Produk</h4>
+
+      <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
         :to="{ name: 'ProductCreate' }">Tambah Produk</v-btn>
+    </div>
 
-      <v-card-title class="d-flex align-center pe-2">
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-          variant="solo-filled" flat hide-details single-line></v-text-field>
-      </v-card-title>
+    <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg mt-5">
+      <template v-slot:loading>
+        <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
+      </template>
 
-      <v-data-table :loading="loading" v-model:search="search" :headers="headerTable" :filter-keys="['name', 'price']"
-        :items="items">
-        <template v-slot:loading>
-          <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
-        </template>
+      <template v-slot:item.no="{ item }">
+        {{ items.indexOf(item) + 1 }}
+      </template>
 
-        <template v-slot:item.no="{ item }">
-          {{ items.indexOf(item) + 1 }}
-        </template>
+      <template v-slot:item.price="{ item }">
+        {{ formatRupiah(item.price) }}
+      </template>
 
-        <template v-slot:item.price="{ item }">
-          {{ formatRupiah(item.price) }}
-        </template>
+      <template v-slot:item.action="{ item }">
+        <div class="d-inline">
+          <router-link class="ma-1 text-decoration-none" :to="{ name: 'ProductEdit', params: { id: item.id } }">
+            <span class="text-orange-darken-3">
+              <v-icon icon="mdi-square-edit-outline"></v-icon>
+              <span>Edit</span>
+            </span>
+          </router-link>
+          |
+          <button class="ma-1" @click="openDeleteModal(item.id, item.name)">
+            <span class="text-red-darken-3">
+              <v-icon icon="mdi-delete"></v-icon>
+              <span>Hapus</span>
+            </span>
+          </button>
+        </div>
+      </template>
+    </v-data-table>
 
-        <template v-slot:item.action="{ item }">
-          <div class="d-flex justify-center">
-            <v-btn class="ma-1" color="primary" :to="{ name: 'ProductEdit', params: { id: item.id } }">Edit</v-btn>
-            <v-btn class="ma-1" color="error" @click="openDeleteModal(item.id, item.name)">Hapus</v-btn>
+    <!-- Start Modal Delete -->
+    <v-dialog v-model="deleteModal" max-width="600" persistent>
+      <v-card>
+        <v-card-text>
+          <div class="text-center pa-2">
+            <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
+            <p class="mt-2">Apakah anda yakin ingin menghapus Produk <strong>{{ nameDel
+                }}</strong> ?</p>
           </div>
-        </template>
-      </v-data-table>
+        </v-card-text>
+        <v-card-actions class="pa-6">
+          <v-btn text="tidak" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
 
-      <!-- Start Modal Delete -->
-      <v-dialog v-model="deleteModal" max-width="600" persistent>
-        <v-card>
-          <v-card-text>
-            <div class="text-center pa-2">
-              <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
-              <p class="mt-2">Apakah anda yakin ingin menghapus Produk <strong>{{ nameDel
-                  }}</strong> ?</p>
-            </div>
-          </v-card-text>
-          <v-card-actions class="pa-6">
-            <v-btn text="cancel" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
-
-            <v-btn color="primary" :loading="loadDelete" text="Hapus" variant="flat" @click="deleteProduct"
-              :disabled="loadDelete"></v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <!-- End Modal Delete -->
-    </v-card>
+          <v-btn color="deep-orange-accent-4" :loading="loadDelete" text="ya" variant="flat" @click="deleteProduct"
+            :disabled="loadDelete"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- End Modal Delete -->
   </main-layout>
 </template>
 <script setup>

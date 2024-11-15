@@ -18,6 +18,7 @@
             <div v-if="file.preview" class="actions">
                 <button class="edit-btn" @click="chooseAnotherFile(index)">Pilih File Lain</button>
                 <button class="delete-btn" @click="removeFile(index)">Hapus File</button>
+
             </div>
         </div>
     </div>
@@ -67,7 +68,7 @@ const handleFileChange = (index) => {
             // Emit the files array to the parent component
             emit('update-files', files.value);
             // Automatically add a new upload box when a file is selected
-            addNewUploadBox();            
+            addNewUploadBox();
         };
         reader.readAsDataURL(file);
     }

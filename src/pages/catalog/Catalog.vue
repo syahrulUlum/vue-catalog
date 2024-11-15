@@ -1,7 +1,7 @@
 <template>
     <user-layout>
-        <v-sheet v-if="items.length > 0" class="d-flex flex-wrap" style="gap: 18px">
-            <v-sheet v-for="item in items" :key="item">
+        <v-sheet v-if="items.length > 0" class="d-flex flex-wrap bg-transparent" style="gap: 18px">
+            <v-sheet v-for="item in items" :key="item" class="bg-transparent">
                 <v-card elevation="6" :loading="loading" class="mx-auto" width="275">
                     <template v-slot:loader="{ isActive }">
                         <v-skeleton-loader v-if="isActive" type="image"></v-skeleton-loader>
@@ -22,7 +22,7 @@
                     </v-card-item>
 
                     <v-card-actions>
-                        <v-btn color="light-blue-darken-4 font-weight-bold"
+                        <v-btn color="orange-accent-4" class="font-weight-bold"
                             :to="{ name: 'CatalogDetail', params: { id: item.id } }" text="Detail" block
                             variant="flat"></v-btn>
                     </v-card-actions>

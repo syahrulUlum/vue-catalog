@@ -1,106 +1,110 @@
 <template>
     <main-layout>
-        <h2>User Referral</h2>
-        <v-card class="mx-auto mt-2 pa-3 overflow-x-auto" elevation="6">
-            <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-plus" variant="flat"
+        <div class="d-flex align-center text-subtitle-1 text-medium-emphasis">
+            <span>User Referral</span>
+            <v-icon icon="mdi-chevron-right"></v-icon>
+            <span>List</span>
+        </div>
+        <div class="d-flex align-center justify-space-between">
+            <h4 class="text-h4 font-weight-bold">User Referral</h4>
+            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
                 @click="openAddModal()">Tambah User Referral</v-btn>
+        </div>
 
-            <!-- Table -->
-            <v-card-title class="d-flex align-center pe-2">
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                    variant="solo-filled" flat hide-details single-line></v-text-field>
-            </v-card-title>
+        <!-- Table -->
+        <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg mt-5">
+            <template v-slot:loading>
+                <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
+            </template>
 
-            <v-divider></v-divider>
-            <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
-                :filter-keys="['name', 'email', 'telp', 'link']" :items="items" class="all-border">
-                <template v-slot:loading>
-                    <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
-                </template>
+            <template v-slot:item.no="{ item }">
+                {{ items.indexOf(item) + 1 }}
+            </template>
 
-                <template v-slot:item.no="{ item }">
-                    {{ items.indexOf(item) + 1 }}
-                </template>
+            <template v-slot:item.link="{ item }">
+                {{ getDomain + item.link }}
+            </template>
 
-                <template v-slot:item.link="{ item }">
-                    {{ getDomain + item.link }}
-                </template>
+            <template v-slot:item.action="{ item }">
+                <div class="d-inline">
+                    <button class="ma-1" @click="openEditModal(item)">
+                        <span class="text-orange-darken-3">
+                            <v-icon icon="mdi-square-edit-outline"></v-icon>
+                            <span>Edit</span>
+                        </span>
+                    </button>
+                    |
+                    <button class="ma-1" @click="openDeleteModal(item.id, item.name)">
+                        <span class="text-red-darken-3">
+                            <v-icon icon="mdi-delete"></v-icon>
+                            <span>Hapus</span>
+                        </span>
+                    </button>
 
-                <template v-slot:item.action="{ item }">
-                    <div class="d-inline">
-                        <v-btn class="ma-1" color="primary" @click="openEditModal(item)">Edit</v-btn>
+                </div>
+            </template>
+        </v-data-table>
+        <!-- End Table -->
 
-                        <v-spacer></v-spacer>
 
-                        <v-btn class="ma-1" color="error" @click="openDeleteModal(item.id, item.name)">Hapus</v-btn>
+        <!-- Start Modal -->
+        <v-dialog v-model="dialog" max-width="600" persistent>
+            <v-card :title="`${textModal} User Referral`">
+                <v-card-text>
+                    <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
+                        label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+
+                    <v-text-field v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
+                        label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
+
+                    <v-text-field v-model="data.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
+                        label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
+
+                    <v-textarea v-model="data.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
+                        label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
+
+                    <!-- disable jika edit -->
+                    <v-text-field label="Link Referral" v-model="data.link" :prefix="getDomain" readonly
+                        v-if="data.id"></v-text-field>
+                    <!-- aktif jika tambah -->
+                    <v-text-field label="Link Referral" v-model="data.link"
+                        :error-messages="v$.link.$errors.map((e) => e.$message)" required @blur="convertSlug('link')"
+                        @input="v$.link.$touch" :prefix="getDomain" v-else></v-text-field>
+
+                </v-card-text>
+                <v-card-actions class="pa-6">
+                    <v-spacer></v-spacer>
+
+                    <v-btn text="Tutup" variant="plain" @click="closeModal" :disabled="loadSave"></v-btn>
+
+                    <v-btn color="amber-darken-4" :loading="loadSave" :text="textModal" variant="flat"
+                        @click="saveUserReferral" :disabled="loadSave"></v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- End Modal -->
+
+        <!-- Start Modal Delete -->
+        <v-dialog v-model="deleteModal" max-width="600" persistent>
+            <v-card>
+                <v-card-text>
+                    <div class="text-center pa-2">
+                        <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
+                        <p class="mt-2">Apakah anda yakin ingin menghapus User Referral <strong>{{ nameDel
+                                }}</strong> ?</p>
                     </div>
-                </template>
-            </v-data-table>
-            <!-- End Table -->
+                </v-card-text>
+                <v-card-actions class="pa-6">
+                    <v-spacer></v-spacer>
 
+                    <v-btn text="tidak" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
 
-            <!-- Start Modal -->
-            <v-dialog v-model="dialog" max-width="600" persistent>
-                <v-card :title="`${textModal} User Referral`">
-                    <v-card-text>
-                        <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
-                            label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
-
-                        <v-text-field v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
-                            label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
-
-                        <v-text-field v-model="data.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
-                            label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
-
-                        <v-textarea v-model="data.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
-                            label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
-
-                        <!-- disable jika edit -->
-                        <v-text-field label="Link Referral" v-model="data.link" :prefix="getDomain" readonly
-                            v-if="data.id"></v-text-field>
-                        <!-- aktif jika tambah -->
-                        <v-text-field label="Link Referral" v-model="data.link"
-                            :error-messages="v$.link.$errors.map((e) => e.$message)" required
-                            @blur="convertSlug('link')" @input="v$.link.$touch" :prefix="getDomain"
-                            v-else></v-text-field>
-
-                    </v-card-text>
-                    <v-card-actions class="pa-6">
-                        <v-spacer></v-spacer>
-
-                        <v-btn text="Tutup" variant="plain" @click="closeModal" :disabled="loadSave"></v-btn>
-
-                        <v-btn color="primary" :loading="loadSave" :text="textModal" variant="flat"
-                            @click="saveUserReferral" :disabled="loadSave"></v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-            <!-- End Modal -->
-
-            <!-- Start Modal Delete -->
-            <v-dialog v-model="deleteModal" max-width="600" persistent>
-                <v-card>
-                    <v-card-text>
-                        <div class="text-center pa-2">
-                            <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
-                            <p class="mt-2">Apakah anda yakin ingin menghapus User Referral <strong>{{ nameDel
-                                    }}</strong> ?</p>
-                        </div>
-                    </v-card-text>
-                    <v-card-actions class="pa-6">
-                        <v-spacer></v-spacer>
-
-                        <v-btn text="cancel" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
-
-                        <v-btn color="primary" :loading="loadDelete" text="Hapus" variant="flat"
-                            @click="deleteUserReferral" :disabled="loadDelete"></v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-            <!-- End Modal Delete -->
-        </v-card>
+                    <v-btn color="deep-orange-accent-4" :loading="loadDelete" text="ya" variant="flat" @click="deleteUserReferral"
+                        :disabled="loadDelete"></v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- End Modal Delete -->
     </main-layout>
 </template>
 <script setup>
@@ -327,14 +331,3 @@ onMounted(() => {
 })
 // End Get Data
 </script>
-
-<style>
-#app>div>div>main>div>div>div.v-table.v-table--has-top.v-table--has-bottom.v-theme--light.v-table--density-default.v-data-table>div.v-table__wrapper>table>thead>tr {
-    background-color: #1976d2;
-    color: white;
-}
-
-.v-data-table-header__content {
-    font-weight: 600;
-}
-</style>

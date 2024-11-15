@@ -1,30 +1,55 @@
 <template>
-  <v-navigation-drawer v-model="drawer" class="bg-indigo" theme="dark" permanent>
-    <h2 class="text-center mt-3 mb-4">Katalog</h2>
-    <v-divider></v-divider>
-    <v-list density="compact" nav>
-      <v-list-item :active="$route.name == 'Dashboard'" prepend-icon="mdi-view-dashboard" title="Dashboard"
-        value="dashboard" :to="{ name: 'Dashboard' }"></v-list-item>
-      <v-list-item :active="['Product', 'ProductCreate', 'ProductEdit'].includes($route.name)"
-        prepend-icon="mdi-package-variant-closed" title="Produk" value="katalog" :to="{ name: 'Product' }"></v-list-item>
-      <v-list-item :active="$route.name == 'UserReferral'" prepend-icon="mdi-account-multiple" title="User Referral"
-        value="user-referral" :to="{ name: 'UserReferral' }"></v-list-item>
-      <v-list-item :active="$route.name == 'Transaction'" prepend-icon="mdi-swap-horizontal-bold" title="Transaksi"
-        value="transaction" :to="{ name: 'Transaction' }"></v-list-item>
-    </v-list>
-
-    <template v-slot:append>
-      <div class="pa-2">
-        <v-btn @click="logoutModal = true" block>
-          Keluar
-        </v-btn>
-      </div>
+  <v-app-bar :elevation="2" prominent>
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" v-if="width <= 768"></v-app-bar-nav-icon>
     </template>
-  </v-navigation-drawer>
+    <v-app-bar-title class="font-weight-bold">Katalog</v-app-bar-title>
+    <template v-slot:append>
+      <button class="mr-5">
+        <v-avatar image="/avatar.jpg"></v-avatar>
 
-  <v-app-bar prominent>
-    <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-menu activator="parent">
+        <v-list>
+          <v-list-item>
+            <v-btn @click="logoutModal = true" block class="text-subtitle-1">Logout</v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      </button>
+    </template>
   </v-app-bar>
+  <v-navigation-drawer v-model="drawer" class="bg-transparent border-0 mt-5" permanent>
+    <v-list density="compact" nav>
+      <v-list-item :active="$route.name == 'Dashboard'" class="text-grey-darken-2" value="dashboard"
+        :to="{ name: 'Dashboard' }">
+        <div :class="$route.name == 'Dashboard' ? 'text-orange' : ''">
+          <v-icon class="mr-3" icon="mdi-view-dashboard"></v-icon>
+          <span class="text-subtitle-2">Dashboard</span>
+        </div>
+      </v-list-item>
+      <v-list-item :active="['Product', 'ProductCreate', 'ProductEdit'].includes($route.name)"
+        class="text-grey-darken-2" value="product" :to="{ name: 'Product' }">
+        <div :class="['Product', 'ProductCreate', 'ProductEdit'].includes($route.name) ? 'text-orange' : ''">
+          <v-icon class="mr-3" icon="mdi-package-variant-closed"></v-icon>
+          <span class="text-subtitle-2">Produk</span>
+        </div>
+      </v-list-item>
+      <v-list-item :active="$route.name == 'UserReferral'" class="text-grey-darken-2" value="user-referral"
+        :to="{ name: 'UserReferral' }">
+        <div :class="$route.name == 'UserReferral' ? 'text-orange' : ''">
+          <v-icon class="mr-3" icon="mdi-account-multiple"></v-icon>
+          <span class="text-subtitle-2">User Referral</span>
+        </div>
+      </v-list-item>
+      <v-list-item :active="$route.name == 'Transaction'" class="text-grey-darken-2" value="transaction"
+        :to="{ name: 'Transaction' }">
+        <div :class="$route.name == 'Transaction' ? 'text-orange' : ''">
+          <v-icon class="mr-3" icon="mdi-swap-horizontal-bold"></v-icon>
+          <span class="text-subtitle-2">Transaksi</span>
+        </div>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 
   <v-main class="h-auto">
     <div class="pa-6 h-auto">
@@ -66,6 +91,8 @@ const { width } = useDisplay();
 onMounted(() => {
   if (width.value <= 768) {
     drawer.value = false;
+  }else{
+    drawer.value = true;
   }
 })
 

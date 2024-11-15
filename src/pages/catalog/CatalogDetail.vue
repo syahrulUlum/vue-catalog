@@ -1,11 +1,11 @@
 <template>
     <user-layout v-if="checkData">
-        <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left" variant="flat"
+        <v-btn class="text-none font-weight-regular" color="orange-accent-4" variant="flat"
             :to="{ name: 'Catalogs' }">Kembali</v-btn>
 
         <v-row no-gutters>
             <v-col cols="12" sm="12" md="6">
-                <v-sheet class="ma-2 pa-3">
+                <v-sheet class="ma-2 pa-3 bg-transparent">
                     <v-carousel class="mt-4" width="50%" interval="3000" :height="heightCarousel" cycle
                         hide-delimiter-background>
                         <v-carousel-item v-for="image in data.images" :key="image" :src="image" cover></v-carousel-item>
@@ -13,12 +13,12 @@
                 </v-sheet>
             </v-col>
             <v-col cols="12" sm="12" md="6">
-                <v-sheet class="mt-6 ml-4">
+                <v-sheet class="mt-6 ml-4 bg-transparent">
                     <h1>{{ data.name }}</h1>
                     <h2>{{ formatRupiah(data.price) }}</h2>
                     <p class="text-h6 mt-4">Deskripsi</p>
                     <p>{{ data.description }}</p>
-                    <v-btn @click="openOrderModal" class="mt-4" color="blue-darken-3" prepend-icon="mdi-cart"
+                    <v-btn @click="openOrderModal" class="mt-4" color="orange-accent-4" prepend-icon="mdi-cart"
                         variant="flat">Beli</v-btn>
                 </v-sheet>
             </v-col>
@@ -49,7 +49,7 @@
 
                     <v-btn text="Tutup" variant="plain" @click="closeOrderModal" :disabled="loadOrder"></v-btn>
 
-                    <v-btn color="primary" :loading="loadOrder" text="Beli" variant="flat" @click="orderProduct"
+                    <v-btn color="orange-accent-4" :loading="loadOrder" text="Beli" variant="flat" @click="orderProduct"
                         :disabled="loadOrder"></v-btn>
                 </v-card-actions>
             </v-card>

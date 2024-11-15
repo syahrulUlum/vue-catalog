@@ -1,55 +1,63 @@
 <template>
     <main-layout>
         <div class="d-flex align-center text-subtitle-1 text-medium-emphasis">
-            <span>Dashboard</span> 
-            <v-icon icon="mdi-chevron-right"></v-icon>
             <span>Transaksi</span>
+            <v-icon icon="mdi-chevron-right"></v-icon>
+            <span>List</span>
         </div>
-        <h2>Transaksi</h2>
-        <v-card class="mx-auto mt-2 pa-3 overflow-x-auto" elevation="6">
-            <v-card-title class="d-flex align-center pe-2">
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                    variant="solo-filled" flat hide-details single-line></v-text-field>
-            </v-card-title>
+        <h4 class="text-h4 font-weight-bold">Transaksi</h4>
+        <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
+            :filter-keys="['code', 'ref_id']" :items="items" class="border rounded-lg mt-5">
+            <template v-slot:loading>
+                <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
+            </template>
 
-            <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
-                :filter-keys="['code', 'ref_id']" :items="items">
-                <template v-slot:loading>
-                    <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
-                </template>
+            <template v-slot:item.no="{ item }">
+                {{ items.indexOf(item) + 1 }}
+            </template>
 
-                <template v-slot:item.no="{ item }">
-                    {{ items.indexOf(item) + 1 }}
-                </template>
+            <template v-slot:item.product_name="{ item }">
+                {{ item.product.name }}
+            </template>
 
-                <template v-slot:item.product_name="{ item }">
-                    {{ item.product.name }}
-                </template>
+            <template v-slot:item.created_at="{ item }">
+                {{ formatDate(item.created_at) }}
+            </template>
 
-                <template v-slot:item.created_at="{ item }">
-                    {{ formatDate(item.created_at) }}
-                </template>
+            <template v-slot:item.status="{ item }">
+                <span v-if="item.status == 0"
+                    class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
+                <span v-if="item.status == 1" class="text-green d-inline-block font-weight-bold">Selesai</span>
+                <span v-if="item.status == 2" class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
+            </template>
 
-                <template v-slot:item.status="{ item }">
-                    <span v-if="item.status == 0"
-                        class="pa-3 bg-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
-                    <span v-if="item.status == 1" class="pa-3 bg-green d-inline-block font-weight-bold">Selesai</span>
-                    <span v-if="item.status == 2" class="pa-3 bg-red d-inline-block font-weight-bold">Dibatalkan</span>
-                </template>
-
-                <template v-slot:item.action="{ item }">
-                    <div class="d-flex justify-center">
-                        <v-btn class="ma-1" color="primary" @click="openModalDetail(item)">Detail</v-btn>
-                        <template v-if="item.status == 0">
-                            <v-btn class="ma-1" color="success" @click="openModalAction(1, item.id)">Selesai</v-btn>
-                            <v-btn class="ma-1" color="error" @click="openModalAction(2, item.id)">Batal</v-btn>
-                        </template>
-                    </div>
-                </template>
-            </v-data-table>
-        </v-card>
+            <template v-slot:item.action="{ item }">
+                <div class="d-inline">
+                    <button class="ma-1" @click="openModalDetail(item)">
+                        <span class="text-indigo-darken-2">
+                            <v-icon icon="mdi-list-box-outline"></v-icon>
+                            <span>Detail</span>
+                        </span>
+                    </button>
+                    <template v-if="item.status == 0">
+                        |
+                        <button class="ma-1" @click="openModalAction(1, item.id)">
+                            <span class="text-green">
+                                <v-icon icon="mdi-check"></v-icon>
+                                <span>Selesai</span>
+                            </span>
+                        </button>
+                        |
+                        <button class="ma-1" @click="openModalAction(2, item.id)">
+                            <span class="text-red">
+                                <v-icon icon="mdi-cancel"></v-icon>
+                                <span>Batal</span>
+                            </span>
+                        </button>
+                    </template>
+                </div>
+            </template>
+        </v-data-table>
 
         <!-- Modal Detail -->
         <v-dialog v-model="modalDetail" max-width="600" persistent>
@@ -115,11 +123,11 @@
                             <td>:</td>
                             <td>
                                 <span v-if="data.status == 0"
-                                    class="pa-3 bg-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
+                                    class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
                                 <span v-if="data.status == 1"
-                                    class="pa-3 bg-green d-inline-block font-weight-bold">Selesai</span>
+                                    class="text-green d-inline-block font-weight-bold">Selesai</span>
                                 <span v-if="data.status == 2"
-                                    class="pa-3 bg-red d-inline-block font-weight-bold">Dibatalkan</span>
+                                    class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
                             </td>
                         </tr>
                     </table>

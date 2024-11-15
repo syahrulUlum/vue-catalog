@@ -1,40 +1,39 @@
 <template>
     <main-layout>
-        <h2>Tambah Produk</h2>
-        <v-card class="mx-auto mt-2 pa-1 overflow-x-auto" elevation="6">
-            <v-card-title>
-                <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left"
-                    variant="flat" :to="{ name: 'Product' }">Kembali</v-btn>
-            </v-card-title>
+        <div class="d-flex align-center text-subtitle-1 text-medium-emphasis">
+            <span>Produk</span>
+            <v-icon icon="mdi-chevron-right"></v-icon>
+            <span>Tambah</span>
+        </div>
+        <div class="d-flex align-center justify-space-between">
+            <h4 class="text-h4 font-weight-bold">Tambah Produk</h4>
 
-            <v-divider></v-divider>
+            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
+                :to="{ name: 'Product' }">Kembali</v-btn>
+        </div>
 
-            <v-card-text class="mt-3">
-                <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
-                    required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+        <div class="mt-5">
+            <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
+                required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
-                <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)"
-                    label="Harga" required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
+            <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)" label="Harga"
+                required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
 
-                <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
-                    label="Deskripsi" required @blur="v$.description.$touch"
-                    @input="v$.description.$touch"></v-textarea>
+            <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
+                label="Deskripsi" required @blur="v$.description.$touch" @input="v$.description.$touch"></v-textarea>
 
-                <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
-                <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
-                    <FileUpload @update-files="handleUpdatedFiles" />
-                </v-card>
-                <v-scroll-y-transition>
-                    <div class="mt-1 ml-4 text-danger" v-if="v$.images.$errors.length > 0">
-                        <small class="text-caption text-red-darken-4">{{ v$.images.$errors[0].$message }}</small>
-                    </div>
-                </v-scroll-y-transition>
-            </v-card-text>
-            <v-card-actions class="pa-6">
-                <v-btn color="primary" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
-                    :loading="loadCreate"></v-btn>
-            </v-card-actions>
-        </v-card>
+            <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
+            <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
+                <FileUpload @update-files="handleUpdatedFiles" />
+            </v-card>
+            <v-scroll-y-transition>
+                <div class="mt-1 ml-4 text-danger" v-if="v$.images.$errors.length > 0">
+                    <small class="text-caption text-red-darken-4">{{ v$.images.$errors[0].$message }}</small>
+                </div>
+            </v-scroll-y-transition>
+        </div>
+        <v-btn color="orange-accent-4" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
+            :loading="loadCreate" class="mt-3"></v-btn>
     </main-layout>
 </template>
 <script setup>

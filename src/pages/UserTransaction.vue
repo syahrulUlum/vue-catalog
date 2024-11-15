@@ -1,6 +1,6 @@
 <template>
     <user-layout v-if="checkData">
-        <v-btn class="text-none font-weight-regular" color="blue-darken-3" prepend-icon="mdi-arrow-left" variant="flat"
+        <v-btn class="text-none font-weight-regular" color="orange-accent-4" variant="flat"
             :to="{ name: 'Catalogs' }">Kembali ke Katalog</v-btn>
 
         <h2 class="text-h4 text-medium-emphasis mt-4">Transaksi Berhasil</h2>
@@ -67,11 +67,11 @@
                         <td>:</td>
                         <td>
                             <span v-if="data.status == 0"
-                                class="pa-3 bg-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
+                                class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
                             <span v-if="data.status == 1"
-                                class="pa-3 bg-green d-inline-block font-weight-bold">Selesai</span>
+                                class="text-green d-inline-block font-weight-bold">Selesai</span>
                             <span v-if="data.status == 2"
-                                class="pa-3 bg-red d-inline-block font-weight-bold">Dibatalkan</span>
+                                class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
                         </td>
                     </tr>
                 </table>
