@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { auth } from '@/firebaseConfig';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { toast } from 'vue3-toastify';
 
 const user = ref(null);
 const sessionExpiration = ref(null);

@@ -5,6 +5,7 @@ import ProductCreate from '@/pages/admin/product/ProductCreate.vue';
 import ProductEdit from '@/pages/admin/product/ProductEdit.vue';
 import Login from '@/pages/admin/Login.vue';
 import UserReferral from '@/pages/admin/UserReferral.vue';
+import Transaction from '@/pages/admin/Transaction.vue';
 import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
 import CatalogDetail from '@/pages/catalog/CatalogDetail.vue';
@@ -33,7 +34,7 @@ const routes = [
     beforeEnter: requireAuth
   },
   {
-    path: '/admin/product',
+    path: '/admin/products',
     children: [
       {
         path: "",
@@ -56,9 +57,15 @@ const routes = [
     ]
   },
   {
-    path: '/admin/user-referral',
+    path: '/admin/user-referrals',
     name: 'UserReferral',
     component: UserReferral,
+    beforeEnter: requireAuth
+  },
+  {
+    path: '/admin/transactions',
+    name: 'Transaction',
+    component: Transaction,
     beforeEnter: requireAuth
   },
   {

@@ -4,11 +4,13 @@
     <v-divider></v-divider>
     <v-list density="compact" nav>
       <v-list-item :active="$route.name == 'Dashboard'" prepend-icon="mdi-view-dashboard" title="Dashboard"
-        value="dashboard" to="/admin/dashboard"></v-list-item>
+        value="dashboard" :to="{ name: 'Dashboard' }"></v-list-item>
       <v-list-item :active="['Product', 'ProductCreate', 'ProductEdit'].includes($route.name)"
-        prepend-icon="mdi-package-variant-closed" title="Produk" value="katalog" to="/admin/product"></v-list-item>
+        prepend-icon="mdi-package-variant-closed" title="Produk" value="katalog" :to="{ name: 'Product' }"></v-list-item>
       <v-list-item :active="$route.name == 'UserReferral'" prepend-icon="mdi-account-multiple" title="User Referral"
-        value="user-referral" to="/admin/user-referral"></v-list-item>
+        value="user-referral" :to="{ name: 'UserReferral' }"></v-list-item>
+      <v-list-item :active="$route.name == 'Transaction'" prepend-icon="mdi-swap-horizontal-bold" title="Transaksi"
+        value="transaction" :to="{ name: 'Transaction' }"></v-list-item>
     </v-list>
 
     <template v-slot:append>
