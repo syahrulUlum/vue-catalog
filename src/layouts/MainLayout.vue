@@ -9,12 +9,12 @@
         <v-avatar image="/avatar.jpg"></v-avatar>
 
         <v-menu activator="parent">
-        <v-list>
-          <v-list-item>
-            <v-btn @click="logoutModal = true" block class="text-subtitle-1">Logout</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+          <v-list>
+            <v-list-item>
+              <v-btn @click="logoutModal = true" block class="text-subtitle-1">Keluar</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </button>
     </template>
   </v-app-bar>
@@ -91,7 +91,7 @@ const { width } = useDisplay();
 onMounted(() => {
   if (width.value <= 768) {
     drawer.value = false;
-  }else{
+  } else {
     drawer.value = true;
   }
 })

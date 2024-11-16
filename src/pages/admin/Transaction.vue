@@ -5,7 +5,24 @@
             <v-icon icon="mdi-chevron-right"></v-icon>
             <span>List</span>
         </div>
-        <h4 class="text-h4 font-weight-bold">Transaksi</h4>
+        <div class="d-flex align-center justify-space-between">
+            <h4 class="text-h4 font-weight-bold">Transaksi</h4>
+            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat">
+                Export Excel
+
+                <v-menu activator="parent">
+                    <v-list>
+                        <v-list-item>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('1')">Hari Ini</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('7')">7 Hari Yang Lalu</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('30')">30 Hari Yang Lalu</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                @click="exportToExcel('all')">Semuanya</v-btn>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </v-btn>
+        </div>
         <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
             :filter-keys="['code', 'ref_id']" :items="items" class="border rounded-lg mt-5">
             <template v-slot:loading>
@@ -165,8 +182,9 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import { onMounted, reactive, ref } from 'vue';
 import { toast } from 'vue3-toastify';
-import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc, where, Timestamp } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import * as XLSX from 'xlsx';
 
 const search = ref("");
 const loading = ref(false);
@@ -303,6 +321,98 @@ const trxAction = async (status) => {
         actionModal.value = false;
     }
 }
+
+// Export Excel
+const exportRange = ref('all');
+const today = new Date();
+
+const fetchDataForExcel = async () => {
+    let startDate;
+    let endDate = new Date();
+
+    switch (exportRange.value) {
+        case '1':
+            startDate = new Date(today.setHours(0, 0, 0, 0));
+            break;
+        case '7':
+            startDate = new Date(today.setDate(today.getDate() - 7));
+            break;
+        case '30':
+            startDate = new Date(today.setMonth(today.getMonth() - 1));
+            break;
+        case 'all':
+        default:
+            startDate = null;
+            break;
+    }
+
+    const collectionRef = collection(db, 'transactions');
+    let q;
+
+    if (startDate) {
+        q = query(collectionRef, where('created_at', '>=', Timestamp.fromDate(startDate)));
+    } else {
+        q = query(collectionRef);
+    }
+
+    const querySnapshot = await getDocs(q);
+    const dataExcel = [];
+    querySnapshot.forEach((doc) => {
+        dataExcel.push({ id: doc.id, ...doc.data() });
+    });
+
+    return { dataExcel, startDate, endDate };
+};
+
+const prepareDataForExcel = (dataExcel) => {
+    return dataExcel.map(item => ({
+        'Kode Transaksi': item.code,
+        'Nama': item.name || 'N/A',
+        'Email': item.email || 'N/A',
+        'No Hp': item.telp || 'N/A',
+        'Alamat': item.address || 'N/A',
+        'Nama Produk': item.product.name || 'N/A',
+        'Harga Produk': item.product.price || 'N/A',
+        'Tanggal Pembelian': new Date(item.created_at?.seconds * 1000).toLocaleString() || 'N/A',
+        'Kode Referral': item.ref_id || 'N/A',
+        'Status': item.status == 0 ? 'Diproses' : item.status == 1 ? 'Selesai' : 'Dibatalkan' || 'N/A',
+    }));
+};
+
+const exportToExcel = async (val) => {
+    exportRange.value = val
+    const { dataExcel: rawData, startDate, endDate } = await fetchDataForExcel();
+
+    if (rawData.length == 0) {
+        toast.error('Tidak ada data untuk diexport pada periode ini');
+        return;
+    }
+
+    const formattedData = prepareDataForExcel(rawData);
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const columnCount = Object.keys(formattedData[0]).length;
+
+    const customHeader = [
+        [`Data dari ${startDate ? formatDate(startDate) : 'Awal'} ke ${formatDate(endDate)}`]
+    ];
+    XLSX.utils.sheet_add_aoa(worksheet, customHeader, { origin: 'A1' });
+
+    const merge = [{ s: { r: 0, c: 0 }, e: { r: 0, c: columnCount - 1 } }];
+    worksheet['!merges'] = merge;
+
+    const emptyRow = Array(columnCount).fill('');
+    XLSX.utils.sheet_add_aoa(worksheet, [emptyRow], { origin: 'A2' });
+
+    const dataHeaders = [Object.keys(formattedData[0])];
+    XLSX.utils.sheet_add_aoa(worksheet, dataHeaders, { origin: 'A3' });
+
+    XLSX.utils.sheet_add_json(worksheet, formattedData, { origin: 'A4', skipHeader: true });
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'DataExport');
+    XLSX.writeFile(workbook, `KatalogExport_${exportRange.value}_days.xlsx`);
+};
 </script>
 <style scoped>
 .styled-table {
