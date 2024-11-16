@@ -73,6 +73,7 @@ import { collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/fi
 import { deleteObject, ref as storageRef } from 'firebase/storage';
 import { db, storage } from "@/firebaseConfig";
 import useAuth from '@/composables/useAuth';
+import { useRouter } from 'vue-router';
 
 const search = ref("");
 const loading = ref(false);
@@ -128,18 +129,17 @@ const closeDeleteModal = () => {
 }
 
 const loadDelete = ref(false);
+const router = useRouter()
 const deleteProduct = async () => {
   if (idDel.value) {
     loadDelete.value = true;
     const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
     await checkSessionExpiration();
     await checkAuthStatus();
-    
+
 
     if (!user.value) {
-        next({ name: 'Login' });
-    } else {
-        next();
+      router.push({ name: 'Login' });
     }
 
     const dataItem = getItemById(idDel.value)

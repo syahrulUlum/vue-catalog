@@ -116,6 +116,7 @@ import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTime
 import { db } from "@/firebaseConfig";
 import { toast } from "vue3-toastify";
 import useAuth from "@/composables/useAuth";
+import { useRouter } from "vue-router";
 
 const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
 
@@ -231,6 +232,8 @@ const generateLinkRef = () => {
 //----------------------------------------------
 
 // Start CUD
+const router = useRouter()
+
 const loadSave = ref(false);
 const saveUserReferral = async () => {
     const isValid = await v$.value.$validate();
@@ -243,9 +246,7 @@ const saveUserReferral = async () => {
 
     if (!user.value) {
         loadSave.value = false;
-        next({ name: 'Login' });
-    } else {
-        next();
+        router.push({ name: 'Login' });
     }
     try {
         if (data.id) {
@@ -296,9 +297,7 @@ const deleteUserReferral = async () => {
 
         if (!user.value) {
             loadDelete.value = false;
-            next({ name: 'Login' });
-        } else {
-            next();
+            router.push({ name: 'Login' });
         }
         try {
             await deleteDoc(doc(db, 'user_referrals', idDel.value));

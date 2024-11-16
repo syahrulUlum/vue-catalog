@@ -189,6 +189,7 @@ import { collection, doc, getDocs, orderBy, query, updateDoc, where, Timestamp }
 import { db } from "@/firebaseConfig";
 import * as XLSX from 'xlsx';
 import useAuth from '@/composables/useAuth';
+import { useRouter } from 'vue-router';
 
 const search = ref("");
 const loading = ref(false);
@@ -305,6 +306,7 @@ const openModalAction = (status, id) => {
     idAction.value = id;
 }
 
+const router = useRouter()
 const trxAction = async (status) => {
     loadAction.value = true;
     const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
@@ -315,9 +317,7 @@ const trxAction = async (status) => {
 
     if (!user.value) {
         loadAction.value = false;
-        next({ name: 'Login' });
-    } else {
-        next();
+        router.push({ name: 'Login' });
     }
 
     try {

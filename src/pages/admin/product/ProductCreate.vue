@@ -84,9 +84,7 @@ const createProduct = async () => {
 
     if (!user.value) {
         loadCreate.value = false;
-        next({ name: 'Login' });
-    } else {
-        next();
+        router.push({ name: 'Login' });
     }
 
     try {

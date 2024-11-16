@@ -111,9 +111,7 @@ const updateProduct = async () => {
 
     if (!user.value) {
         loadUpdate.value = false
-        next({ name: 'Login' });
-    } else {
-        next();
+        router.push({ name: 'Login' });
     }
     try {
         let imageUrls = [];
