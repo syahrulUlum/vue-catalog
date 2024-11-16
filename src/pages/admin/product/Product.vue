@@ -72,6 +72,7 @@ import { toast } from 'vue3-toastify';
 import { collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore";
 import { deleteObject, ref as storageRef } from 'firebase/storage';
 import { db, storage } from "@/firebaseConfig";
+import useAuth from '@/composables/useAuth';
 
 const search = ref("");
 const loading = ref(false);
@@ -130,6 +131,17 @@ const loadDelete = ref(false);
 const deleteProduct = async () => {
   if (idDel.value) {
     loadDelete.value = true;
+    const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
+    await checkSessionExpiration();
+    await checkAuthStatus();
+    
+
+    if (!user.value) {
+        next({ name: 'Login' });
+    } else {
+        next();
+    }
+
     const dataItem = getItemById(idDel.value)
 
     try {

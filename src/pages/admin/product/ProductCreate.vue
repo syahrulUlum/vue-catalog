@@ -45,8 +45,9 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'vue3-toastify';
-import FileUpload from '../../../components/FileUpload.vue';
+import FileUpload from '@/components/FileUpload.vue';
 import { useRouter } from 'vue-router';
+import useAuth from '@/composables/useAuth';
 
 const data = reactive({
     name: "",
@@ -75,6 +76,19 @@ const createProduct = async () => {
     if (!isValid) return
 
     loadCreate.value = true;
+
+    const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
+    await checkSessionExpiration();
+    await checkAuthStatus();
+
+
+    if (!user.value) {
+        loadCreate.value = false;
+        next({ name: 'Login' });
+    } else {
+        next();
+    }
+
     try {
         let imageUrls = [];
 

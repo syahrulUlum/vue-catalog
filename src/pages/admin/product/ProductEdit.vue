@@ -46,6 +46,7 @@ import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'fi
 import { toast } from 'vue3-toastify';
 import FileUpload from '@/components/FileUpload.vue';
 import { useRoute, useRouter } from 'vue-router';
+import useAuth from '@/composables/useAuth';
 
 const data = reactive({
     name: "",
@@ -102,6 +103,18 @@ const updateProduct = async () => {
     if (!isValid) return
 
     loadUpdate.value = true;
+
+    const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
+    await checkSessionExpiration();
+    await checkAuthStatus();
+
+
+    if (!user.value) {
+        loadUpdate.value = false
+        next({ name: 'Login' });
+    } else {
+        next();
+    }
     try {
         let imageUrls = [];
 

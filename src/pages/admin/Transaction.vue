@@ -13,9 +13,12 @@
                 <v-menu activator="parent">
                     <v-list>
                         <v-list-item>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('1')">Hari Ini</v-btn>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('7')">7 Hari Yang Lalu</v-btn>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('30')">30 Hari Yang Lalu</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                @click="exportToExcel('1')">Hari Ini</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('7')">7
+                                Hari Yang Lalu</v-btn>
+                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('30')">30
+                                Hari Yang Lalu</v-btn>
                             <v-btn block class="text-subtitle-1 rounded-0 justify-start"
                                 @click="exportToExcel('all')">Semuanya</v-btn>
                         </v-list-item>
@@ -185,6 +188,7 @@ import { toast } from 'vue3-toastify';
 import { collection, doc, getDocs, orderBy, query, updateDoc, where, Timestamp } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import * as XLSX from 'xlsx';
+import useAuth from '@/composables/useAuth';
 
 const search = ref("");
 const loading = ref(false);
@@ -303,6 +307,19 @@ const openModalAction = (status, id) => {
 
 const trxAction = async (status) => {
     loadAction.value = true;
+    const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
+
+    await checkSessionExpiration();
+    await checkAuthStatus();
+
+
+    if (!user.value) {
+        loadAction.value = false;
+        next({ name: 'Login' });
+    } else {
+        next();
+    }
+
     try {
         const docRef = doc(db, 'transactions', idAction.value);
         if (status == 1) {

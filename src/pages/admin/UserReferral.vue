@@ -99,8 +99,8 @@
 
                     <v-btn text="tidak" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
 
-                    <v-btn color="deep-orange-accent-4" :loading="loadDelete" text="ya" variant="flat" @click="deleteUserReferral"
-                        :disabled="loadDelete"></v-btn>
+                    <v-btn color="deep-orange-accent-4" :loading="loadDelete" text="ya" variant="flat"
+                        @click="deleteUserReferral" :disabled="loadDelete"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -115,6 +115,9 @@ import { email, required, numeric } from "@vuelidate/validators";
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { toast } from "vue3-toastify";
+import useAuth from "@/composables/useAuth";
+
+const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
 
 // Start Data
 const dialog = ref(false);
@@ -234,6 +237,16 @@ const saveUserReferral = async () => {
     if (!isValid) return
 
     loadSave.value = true;
+    await checkSessionExpiration();
+    await checkAuthStatus();
+
+
+    if (!user.value) {
+        loadSave.value = false;
+        next({ name: 'Login' });
+    } else {
+        next();
+    }
     try {
         if (data.id) {
             const UserRef = doc(db, 'user_referrals', data.id);
@@ -277,6 +290,16 @@ const loadDelete = ref(false);
 const deleteUserReferral = async () => {
     if (idDel.value) {
         loadDelete.value = true;
+        await checkSessionExpiration();
+        await checkAuthStatus();
+
+
+        if (!user.value) {
+            loadDelete.value = false;
+            next({ name: 'Login' });
+        } else {
+            next();
+        }
         try {
             await deleteDoc(doc(db, 'user_referrals', idDel.value));
             toast.success('User Referral berhasil dihapus');
