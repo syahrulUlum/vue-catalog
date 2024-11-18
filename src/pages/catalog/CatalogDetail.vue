@@ -1,7 +1,5 @@
 <template>
     <user-layout v-if="checkData">
-        <v-btn class="text-none font-weight-regular" color="orange-accent-4" variant="flat"
-            :to="{ name: 'Catalogs' }">Kembali</v-btn>
 
         <v-row no-gutters>
             <v-col cols="12" sm="12" md="6">
