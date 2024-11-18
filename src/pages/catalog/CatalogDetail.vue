@@ -22,31 +22,6 @@
             </v-col>
         </v-row>
 
-        <section v-if="relevanceProduct.length > 0">
-            <h5 class="text-h5 font-weight-bold mb-4 mt-6">Produk yang mungkin Anda sukai</h5>
-            <v-sheet class="d-flex flex-wrap bg-transparent" style="gap: 18px">
-                <v-sheet v-for="item in relevanceProduct" :key="item" class="bg-transparent">
-                    <v-card elevation="6" class="mx-auto" width="275">
-
-                        <v-img height="230" :src="item.images[0]" cover></v-img>
-
-                        <v-card-item>
-                            <v-card-title>{{ item.name }}</v-card-title>
-                            <div class="text-subtitle-1">
-                                {{ formatRupiah(item.price) }}
-                            </div>
-                        </v-card-item>
-
-                        <v-card-actions>
-                            <v-btn color="orange-accent-4" class="font-weight-bold"
-                                :to="{ name: 'CatalogDetail', params: { id: item.id } }" text="Detail" block
-                                variant="flat"></v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-sheet>
-            </v-sheet>
-        </section>
-
         <!-- Start Modal -->
         <v-dialog v-model="orderModal" max-width="600" persistent>
             <v-card :title="`Order ${data.name}`">
@@ -120,52 +95,6 @@ const getData = async () => {
     }
 };
 
-const relevanceProduct = ref([]);
-const getRelatedProducts = async (currentProduct) => {
-    try {
-        const keywords = currentProduct.name
-            .toLowerCase()
-            .split(' ')
-            .filter(word => word.length > 2);
-
-        const id = route.params.id;
-        const productsRef = collection(db, 'products');
-        const relatedProductsQuery = query(
-            productsRef,
-            limit(6)
-        );
-
-        const querySnapshot = await getDocs(relatedProductsQuery);
-
-        const relatedProducts = [];
-        querySnapshot.forEach(doc => {
-            const product = doc.data();
-            const productName = product.name.toLowerCase();
-
-            let relevanceScore = 0;
-            keywords.forEach(keyword => {
-                if (productName.includes(keyword)) {
-                    relevanceScore++;
-                }
-            });
-
-            if (doc.id != id && relatedProducts.length < 5 && relevanceScore > 0) {
-                relatedProducts.push({
-                    id: doc.id,
-                    ...product,
-                    relevanceScore
-                });
-            }
-        });
-
-        relatedProducts.sort((a, b) => b.relevanceScore - a.relevanceScore);
-        relevanceProduct.value = relatedProducts
-        
-    } catch (error) {
-        toast.error('Error ketika mengambil produk terkait:', error);
-    }
-}
-
 onMounted(async () => {
     const getRefId = localStorage.getItem('ref_id');
     refId.value = getRefId
@@ -173,7 +102,6 @@ onMounted(async () => {
         router.push('/not-found')
     }
     await getData();
-    getRelatedProducts(data)
 })
 
 const formatRupiah = (amount) => {
