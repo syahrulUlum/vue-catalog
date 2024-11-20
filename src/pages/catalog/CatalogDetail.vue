@@ -286,6 +286,7 @@ const generateCode = () => {
 
 .product-qty input {
     -moz-appearance: textfield;
+    appearance: textfield;
     width: 60px;
     text-align: center;
     padding: 5px;
