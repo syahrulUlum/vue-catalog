@@ -14,18 +14,52 @@
                 <v-sheet class="mt-6 ml-4 bg-transparent">
                     <h1>{{ data.name }}</h1>
                     <h2>{{ formatRupiah(data.price) }}</h2>
+
+                    <div class="product-qty my-4">
+                        <button class="mr-2" @click="changeQty('min')">
+                            <v-icon icon="mdi-minus"></v-icon>
+                        </button>
+                        <input type="number" min="0" v-model="data.qty">
+                        <button class="ml-2" @click="changeQty('plus')">
+                            <v-icon icon="mdi-plus"></v-icon>
+                        </button>
+                    </div>
+
                     <p class="text-h6 mt-4">Deskripsi</p>
                     <p>{{ data.description }}</p>
-                    <v-btn @click="openOrderModal" class="mt-4" color="orange-accent-4" prepend-icon="mdi-cart"
-                        variant="flat">Beli</v-btn>
+
+                    <v-btn @click="openOrderModal" class="mt-4 mr-2" color="orange-accent-4" variant="flat">Beli</v-btn>
+                    <v-btn @click="addToCart" class="mt-4" color="indigo" variant="flat">Tambah Ke
+                        Keranjang</v-btn>
                 </v-sheet>
             </v-col>
         </v-row>
 
         <!-- Start Modal -->
         <v-dialog v-model="orderModal" max-width="600" persistent>
-            <v-card :title="`Order ${data.name}`">
+            <v-card title="Tinjauan Pembelian">
                 <v-card-text>
+                    <div class="overflow-x-auto">
+                        <table class="w-100 mb-4 text-center" style="border: 1px sold #ccc;">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="text-subtitle-2 text-medium-emphasis">Qty</td>
+                                <td class="text-subtitle-2 text-medium-emphasis">Total</td>
+                            </tr>
+                            <tr class="text-subtitle-2">
+                                <td width="10%" class="border-t border-b">
+                                    <img :src="data.images[0]" width="50px">
+                                </td>
+                                <td class="text-left border-t border-b">
+                                    <b>{{ data.name }}</b>
+                                    <p>{{ formatRupiah(data.price) }}</p>
+                                </td>
+                                <td class="border-t border-b">{{ data.qty }}</td>
+                                <td class="border-t border-b">{{ formatRupiah(data.qty * data.price) }}</td>
+                            </tr>
+                        </table>
+                    </div>
                     <v-alert class="mb-3" text="Isi data berikut untuk membeli produk" type="warning"></v-alert>
                     <v-text-field v-model="orderData.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
                         label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
@@ -38,9 +72,6 @@
 
                     <v-textarea v-model="orderData.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
                         label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
-
-                    <!-- disable jika edit -->
-                    <v-text-field label="Kode Referral" v-model="refId" readonly></v-text-field>
                 </v-card-text>
                 <v-card-actions class="pa-6">
                     <v-spacer></v-spacer>
@@ -68,12 +99,15 @@ import { useVuelidate } from "@vuelidate/core";
 import { email, required, numeric } from "@vuelidate/validators";
 import { toast } from 'vue3-toastify';
 import useCheckRef from '@/composables/useCheckRef';
+import { useCartStore } from '@/stores/cart';
 
 const data = reactive({
+    id: null,
     name: "",
     price: null,
     description: "",
     images: null,
+    qty: 1
 });
 const refId = ref(null);
 
@@ -85,6 +119,7 @@ const getData = async () => {
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+        data.id = id
         data.name = docSnap.data().name;
         data.price = docSnap.data().price;
         data.description = docSnap.data().description;
@@ -121,6 +156,17 @@ onMounted(() => {
     }
 })
 
+const changeQty = (type) => {
+    if (type === 'min') {
+        if (data.qty < 1) return
+
+        data.qty -= 1
+    }
+    if (type === 'plus') {
+        data.qty += 1
+    }
+}
+
 // Create Order
 const orderData = reactive({
     name: "",
@@ -141,6 +187,10 @@ const v$ = useVuelidate(rules, orderData);
 const orderModal = ref(false);
 
 const openOrderModal = () => {
+    if (data.qty < 1) {
+        toast.error('Jumlah produk yang dibeli tidak boleh kurang dari 1');
+        return
+    }
     orderModal.value = true;
     orderData.name = "";
     orderData.email = "";
@@ -164,6 +214,12 @@ const loadOrder = ref(false);
 const orderProduct = async () => {
     const isValid = await v$.value.$validate();
     if (!isValid) return
+
+    if (data.qty < 1) {
+        toast.error('Jumlah produk yang dibeli tidak boleh kurang dari 1');
+        return
+    }
+
     loadOrder.value = true;
     try {
         const { userRef, getRef } = useCheckRef();
@@ -177,12 +233,13 @@ const orderProduct = async () => {
 
         await addDoc(collection(db, 'transactions'), {
             code: getCode,
-            name: orderData.name,
-            email: orderData.email,
-            telp: orderData.telp,
-            address: orderData.address,
+            ...orderData,
             ref_id: refId.value,
-            product: data,
+            product: [
+                {
+                    ...data
+                }
+            ],
             status: 0,
             created_at: serverTimestamp(),
         });
@@ -193,6 +250,18 @@ const orderProduct = async () => {
     } finally {
         loadOrder.value = false;
     }
+}
+
+const addToCart = () => {
+    if (data.qty < 1) {
+        toast.error('Jumlah produk tidak boleh kurang dari 1');
+        return
+    }
+
+    const cartStore = useCartStore();
+    cartStore.addToCart({ id: data.id, qty: data.qty });
+
+    toast.success('Produk berhasil ditambahkan ke keranjang');
 }
 
 const generateCode = () => {
@@ -209,3 +278,18 @@ const generateCode = () => {
     return `CS${formattedDate}${randomNumber}`;
 }
 </script>
+<style scoped>
+.product-qty input::-webkit-outer-spin-button,
+.product-qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.product-qty input {
+    -moz-appearance: textfield;
+    width: 60px;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+</style>

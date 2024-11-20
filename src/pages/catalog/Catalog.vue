@@ -3,7 +3,7 @@
         <v-row align="start" justify="start">
             <v-col v-for="item in items" :key="item" cols="12" lg="2" md="3" sm="4">
                 <v-sheet class="bg-transparent">
-                    <v-card elevation="6" class="mx-auto cursor-pointer" :loading="loading" width="225" :to="{ name: 'CatalogDetail', params: { id: item.id } }">
+                    <v-card class="mx-auto cursor-pointer bg-grey-lighten-3" :loading="loading" width="225" :to="{ name: 'CatalogDetail', params: { id: item.id } }" variant="text">
                         <template v-slot:loader="{ isActive }">
                             <v-skeleton-loader v-if="isActive" type="image"></v-skeleton-loader>
                             <v-skeleton-loader v-if="isActive" height="80" type="image"></v-skeleton-loader>
