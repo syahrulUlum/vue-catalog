@@ -13,7 +13,9 @@
                 <v-icon size="x-large" v-else>mdi-cart-variant</v-icon>
             </router-link>
 
-            <v-btn class="text-none" stacked>
+            <v-btn class="text-none" stacked
+                :href="`https://wa.me/${contact}?text=Halo,%20saya%20ingin%bertanya`"
+                target="_blank" rel="noopener noreferrer">
                 <v-icon size="x-large">mdi-face-agent</v-icon>
             </v-btn>
         </template>
@@ -34,4 +36,6 @@ const totalCart = ref(cartStore.totalItems)
 watch(() => cartStore.totalItems, () => {
     totalCart.value = cartStore.totalItems
 })
+
+const contact = import.meta.env.VITE_NO_WA;
 </script>
