@@ -5,13 +5,13 @@
         </v-app-bar-title>
 
         <template v-slot:append>
-            <v-btn class="text-none" stacked>
+            <router-link class="text-decoration-none text-black mx-3" :to="{ name: 'Cart' }" stacked>
                 <v-badge v-if="totalCart > 0" color="error" :content="totalCart">
                     <v-icon size="x-large">mdi-cart-variant</v-icon>
                 </v-badge>
 
                 <v-icon size="x-large" v-else>mdi-cart-variant</v-icon>
-            </v-btn>
+            </router-link>
 
             <v-btn class="text-none" stacked>
                 <v-icon size="x-large">mdi-face-agent</v-icon>

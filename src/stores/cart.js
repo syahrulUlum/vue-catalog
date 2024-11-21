@@ -31,9 +31,6 @@ export const useCartStore = defineStore('cart', {
                 // Perbarui qty
                 this.cart[index].qty = qty; 
                 this.saveCart();
-            } else if (qty <= 0) {
-                // Hapus jika qty <= 0
-                this.removeFromCart(productId); 
             }
         },
         saveCart() {

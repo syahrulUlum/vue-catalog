@@ -14,6 +14,7 @@ import { requireAuth } from '@/middlewares/authMiddleware';
 import { requireGuest } from '@/middlewares/guestMiddleware';
 import { requireRef } from '@/middlewares/refMiddleware';
 import useCheckRef from '@/composables/useCheckRef';
+import Cart from '@/pages/Cart.vue';
 
 const routes = [
   {
@@ -107,6 +108,12 @@ const routes = [
     path: '/transaction/:id',
     name: 'UserTransaction',
     component: UserTransaction
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: Cart,
+    beforeEnter: requireRef
   },
   {
     path: '/:catchAll(.*)',
