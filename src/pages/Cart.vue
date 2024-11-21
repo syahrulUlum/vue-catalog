@@ -151,6 +151,7 @@ const changeQty = (type, index) => {
     if (type === 'plus') {
         data.value[index].qty += 1
     }
+    cartStore.updateQuantity(data.value[index].id, data.value[index].qty)
 }
 
 const selectedItems = ref([]);
