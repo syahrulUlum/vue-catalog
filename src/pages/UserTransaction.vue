@@ -4,9 +4,10 @@
         <h4 class="text-h6 mt-4">Kode Transaksi: <b>{{ id }}</b></h4>
         <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat" text="Hubungi Admin"
             prepend-icon="mdi-whatsapp"
-            :href="`https://wa.me/${contact}?text=Halo,%20saya%20telah%20membeli%20produk%20dengan%20kode%20transaksi%20${id},%20mohon%20segera%20diproses`" target="_blank"
-            rel="noopener noreferrer">
+            :href="`https://wa.me/${contact}?text=Halo,%20saya%20telah%20membeli%20produk%20dengan%20kode%20transaksi%20${id},%20mohon%20segera%20diproses`"
+            target="_blank" rel="noopener noreferrer">
         </v-btn>
+
     </user-layout>
     <v-empty-state v-else headline="Whoops, 404" title="Transaction not found"
         text="The Transaction you were looking for does not exist"></v-empty-state>

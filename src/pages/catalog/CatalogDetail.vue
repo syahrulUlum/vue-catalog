@@ -2,12 +2,11 @@
     <user-layout v-if="checkData">
 
         <v-row no-gutters>
-            <v-col cols="12" sm="12" md="6">
+            <v-col cols="12" sm="12" md="5" lg="4">
                 <v-sheet class="ma-2 pa-3 bg-transparent">
-                    <v-carousel class="mt-4" width="50%" interval="3000" :height="heightCarousel" cycle
-                        hide-delimiter-background>
-                        <v-carousel-item v-for="image in data.images" :key="image" :src="image" cover></v-carousel-item>
-                    </v-carousel>
+                    <div class="mx-auto">
+                        <CarouselThumb :img="data.images" />
+                    </div>
                 </v-sheet>
             </v-col>
             <v-col cols="12" sm="12" md="6">
@@ -100,6 +99,7 @@ import { email, required, numeric } from "@vuelidate/validators";
 import { toast } from 'vue3-toastify';
 import useCheckRef from '@/composables/useCheckRef';
 import { useCartStore } from '@/stores/cart';
+import CarouselThumb from '@/components/CarouselThumb.vue';
 
 const data = reactive({
     id: null,
@@ -293,4 +293,5 @@ const generateCode = () => {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 </style>
