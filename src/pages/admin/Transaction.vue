@@ -116,17 +116,38 @@
                             <td style="border-top: 1px solid black;" colspan="3"><b>Produk yang dibeli</b></td>
                         </tr>
                         <tr>
-                            <td>Nama Produk</td>
-                            <td>:</td>
-                            <td>{{ data.product.name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Harga Produk</td>
-                            <td>:</td>
-                            <td>{{ formatRupiah(data.product.price) }}</td>
+                            <td colspan="3">
+                                <div class="overflow-x-auto">
+                                    <table class="w-100 mb-4 text-center" style="border: 1px sold #ccc;">
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="text-subtitle-2 text-medium-emphasis">Qty</td>
+                                            <td class="text-subtitle-2 text-medium-emphasis">Total</td>
+                                        </tr>
+                                        <tr class="text-subtitle-2" v-for="product in data.product" :key="product.id">
+                                            <td width="10%" class="border-t">
+                                                <img :src="product.images[0]" width="50px">
+                                            </td>
+                                            <td class="text-left border-t">
+                                                <b>{{ product.name }}</b>
+                                                <p>{{ formatRupiah(product.price) }}</p>
+                                            </td>
+                                            <td class="border-t">{{ product.qty }}</td>
+                                            <td class="text-right border-t">{{ formatRupiah(product.qty * product.price)
+                                                }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td style="border-top: 1px solid black;" colspan="3"><b>Data Lainnya</b></td>
+                        </tr>
+                        <tr>
+                            <td>Total Harga</td>
+                            <td>:</td>
+                            <td>{{ formatRupiah(totalPrice(data.product)) }}</td>
                         </tr>
                         <tr>
                             <td>Tanggal Pembelian</td>
@@ -254,6 +275,9 @@ const formatDate = (date) => {
 
     return `${formattedDate} ${formattedTime}`;
 }
+const totalPrice = (product) => {
+    return product.reduce((total, item) => total + item.price * item.qty, 0)
+}
 
 const data = reactive({
     code: null,
@@ -289,7 +313,7 @@ const closeModalDetail = () => {
     data.telp = null;
     data.ref_id = null;
     data.status = null;
-    data.product = {};
+    data.product = [];
     data.created_at = null;
     modalDetail.value = false;
 
@@ -381,6 +405,15 @@ const fetchDataForExcel = async () => {
     return { dataExcel, startDate, endDate };
 };
 
+const filterProduct = (product) => {
+    const filteredProduct = product.map(item => ({
+        name: item.name,
+        price: item.price,
+        qty: item.qty
+    }));
+    return JSON.stringify(filteredProduct);
+}
+
 const prepareDataForExcel = (dataExcel) => {
     return dataExcel.map(item => ({
         'Kode Transaksi': item.code,
@@ -388,8 +421,8 @@ const prepareDataForExcel = (dataExcel) => {
         'Email': item.email || 'N/A',
         'No Hp': item.telp || 'N/A',
         'Alamat': item.address || 'N/A',
-        'Nama Produk': item.product.name || 'N/A',
-        'Harga Produk': item.product.price || 'N/A',
+        'Produk': filterProduct(item.product) || 'N/A',
+        'Total Harga': totalPrice(item.product) || 'N/A',
         'Tanggal Pembelian': new Date(item.created_at?.seconds * 1000).toLocaleString() || 'N/A',
         'Kode Referral': item.ref_id || 'N/A',
         'Status': item.status == 0 ? 'Diproses' : item.status == 1 ? 'Selesai' : 'Dibatalkan' || 'N/A',
