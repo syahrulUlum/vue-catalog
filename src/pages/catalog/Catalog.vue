@@ -1,24 +1,16 @@
 <template>
     <user-layout>
-        <v-row align="start" justify="start">
-            <v-col v-for="item in items" :key="item" cols="12" lg="2" md="3" sm="4">
+        <div class="loader-custom mx-auto" v-if="loading"></div>
+        <v-row v-if="items.length >= 0 && !loading" align="start" justify="start">
+            <v-col v-for="item in items" :key="item" cols="6" sm="4" md="3" lg="2" xl="1">
                 <v-sheet class="bg-transparent">
-                    <v-card class="mx-auto cursor-pointer bg-grey-lighten-3" :loading="loading" width="225" :to="{ name: 'CatalogDetail', params: { id: item.id } }" variant="text">
-                        <template v-slot:loader="{ isActive }">
-                            <v-skeleton-loader v-if="isActive" type="image"></v-skeleton-loader>
-                            <v-skeleton-loader v-if="isActive" height="80" type="image"></v-skeleton-loader>
-                            <v-skeleton-loader v-if="isActive" type="heading"></v-skeleton-loader>
-                            <v-skeleton-loader v-if="isActive" style="margin-top: -13px;"
-                                type="text"></v-skeleton-loader>
-                            <v-skeleton-loader v-if="isActive" style="margin-top: -13px;"
-                                type="heading"></v-skeleton-loader>
-                        </template>
-
-                        <v-img height="200" :src="item.images[0]" cover></v-img>
+                    <v-card class="mx-auto cursor-pointer bg-grey-lighten-3 card-product"
+                        :to="{ name: 'CatalogDetail', params: { id: item.id } }" variant="text">
+                        <v-img class="image-product" :src="item.images[0]" cover></v-img>
 
                         <v-card-item>
-                            <v-card-title>{{ item.name }}</v-card-title>
-                            <div class="text-subtitle-1">
+                            <p class="text-h6 text-sm-h5">{{ item.name }}</p>
+                            <div class="text-subtitle-2 text-sm-h6">
                                 {{ formatRupiah(item.price) }}
                             </div>
                         </v-card-item>
@@ -28,7 +20,6 @@
         </v-row>
         <v-empty-state v-if="items.length <= 0 && !loading" title="Produk kosong"
             text="Saat ini produk tidak tersedia"></v-empty-state>
-
     </user-layout>
 </template>
 <script setup>
@@ -66,3 +57,9 @@ onMounted(() => {
     fetchProduk();
 })
 </script>
+<style scoped>
+.image-product {
+    aspect-ratio: 1 / 1;
+}
+
+</style>

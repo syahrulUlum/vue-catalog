@@ -1,7 +1,8 @@
 <template>
-    <user-layout v-if="checkData">
+    <user-layout>
+        <div class="loader-custom mx-auto" v-if="loading"></div>
 
-        <v-row no-gutters>
+        <v-row no-gutters v-if="!loading && checkData">
             <v-col cols="12" sm="12" md="5" lg="4">
                 <v-sheet class="ma-2 pa-3 bg-transparent">
                     <div class="mx-auto">
@@ -14,6 +15,9 @@
                     <h1>{{ data.name }}</h1>
                     <h2>{{ formatRupiah(data.price) }}</h2>
 
+                    <p class="text-h6 mt-4">Deskripsi</p>
+                    <p>{{ data.description }}</p>
+
                     <div class="product-qty my-4">
                         <button class="mr-2" @click="changeQty('min')">
                             <v-icon icon="mdi-minus"></v-icon>
@@ -24,80 +28,27 @@
                         </button>
                     </div>
 
-                    <p class="text-h6 mt-4">Deskripsi</p>
-                    <p>{{ data.description }}</p>
-
-                    <v-btn @click="openOrderModal" class="mt-4 mr-2" color="orange-accent-4" variant="flat">Beli</v-btn>
-                    <v-btn @click="addToCart" class="mt-4" color="indigo" variant="flat">Tambah Ke
-                        Keranjang</v-btn>
+                    <v-btn @click="orderToCart" class="mt-4 mr-2" color="orange-accent-4" variant="flat">Beli</v-btn>
+                    <v-btn @click="addToCart" class="mt-4" color="indigo" variant="flat">Tambah Ke Keranjang</v-btn>
                 </v-sheet>
             </v-col>
         </v-row>
 
-        <!-- Start Modal -->
-        <v-dialog v-model="orderModal" max-width="600" persistent>
-            <v-card title="Tinjauan Pembelian">
-                <v-card-text>
-                    <div class="overflow-x-auto">
-                        <table class="w-100 mb-4 text-center" style="border: 1px sold #ccc;">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td class="text-subtitle-2 text-medium-emphasis">Qty</td>
-                                <td class="text-subtitle-2 text-medium-emphasis">Total</td>
-                            </tr>
-                            <tr class="text-subtitle-2">
-                                <td width="10%" class="border-t border-b">
-                                    <img :src="data.images[0]" width="50px">
-                                </td>
-                                <td class="text-left border-t border-b">
-                                    <b>{{ data.name }}</b>
-                                    <p>{{ formatRupiah(data.price) }}</p>
-                                </td>
-                                <td class="border-t border-b">{{ data.qty }}</td>
-                                <td class="border-t border-b">{{ formatRupiah(data.qty * data.price) }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <v-alert class="mb-3" text="Isi data berikut untuk membeli produk" type="warning"></v-alert>
-                    <v-text-field v-model="orderData.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
-                        label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
-
-                    <v-text-field v-model="orderData.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
-                        label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
-
-                    <v-text-field v-model="orderData.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
-                        label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
-
-                    <v-textarea v-model="orderData.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
-                        label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
-                </v-card-text>
-                <v-card-actions class="pa-6">
-                    <v-spacer></v-spacer>
-
-                    <v-btn text="Tutup" variant="plain" @click="closeOrderModal" :disabled="loadOrder"></v-btn>
-
-                    <v-btn color="orange-accent-4" :loading="loadOrder" text="Beli" variant="flat" @click="orderProduct"
-                        :disabled="loadOrder"></v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <!-- End Modal -->
+        <div class="text-center" v-if="!loading && !checkData">
+            <h4 class="text-h4">Whoops, 404</h4>
+            <h5 class="text-h5">Product not found</h5>
+            <p class="text-subtitle-1">The product you were looking for does not exist</p>
+        </div>
     </user-layout>
-    <v-empty-state v-else headline="Whoops, 404" title="Product not found"
-        text="The product you were looking for does not exist"></v-empty-state>
 </template>
 <script setup>
 import UserLayout from '@/layouts/UserLayout.vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getDoc, doc, addDoc, collection, serverTimestamp, limit, where, query, getDocs } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { db } from "@/firebaseConfig";
 import { useDisplay } from 'vuetify';
-import { useVuelidate } from "@vuelidate/core";
-import { email, required, numeric } from "@vuelidate/validators";
 import { toast } from 'vue3-toastify';
-import useCheckRef from '@/composables/useCheckRef';
 import { useCartStore } from '@/stores/cart';
 import CarouselThumb from '@/components/CarouselThumb.vue';
 
@@ -113,8 +64,10 @@ const refId = ref(null);
 
 const route = useRoute()
 const router = useRouter()
-const checkData = ref(false)
+const checkData = ref(true)
+const loading = ref(true)
 const getData = async () => {
+    loading.value = true
     const id = route.params.id;
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
@@ -125,7 +78,9 @@ const getData = async () => {
         data.description = docSnap.data().description;
         data.images = docSnap.data().images || null;
         checkData.value = true
+        loading.value = false
     } else {
+        loading.value = false
         checkData.value = false
     }
 };
@@ -167,91 +122,6 @@ const changeQty = (type) => {
     }
 }
 
-// Create Order
-const orderData = reactive({
-    name: "",
-    email: "",
-    telp: "",
-    address: ""
-});
-
-const rules = reactive({
-    name: { required },
-    email: { required, email },
-    telp: { required, numeric },
-    address: { required }
-});
-
-const v$ = useVuelidate(rules, orderData);
-
-const orderModal = ref(false);
-
-const openOrderModal = () => {
-    if (data.qty < 1) {
-        toast.error('Jumlah produk yang dibeli tidak boleh kurang dari 1');
-        return
-    }
-    orderModal.value = true;
-    orderData.name = "";
-    orderData.email = "";
-    orderData.telp = "";
-    orderData.address = "";
-    v$.value.$reset();
-
-    if (!refId.value) {
-        router.push('/not-found')
-    }
-}
-const closeOrderModal = () => {
-    orderModal.value = false;
-    orderData.name = "";
-    orderData.email = "";
-    orderData.telp = "";
-    orderData.address = "";
-}
-
-const loadOrder = ref(false);
-const orderProduct = async () => {
-    const isValid = await v$.value.$validate();
-    if (!isValid) return
-
-    if (data.qty < 1) {
-        toast.error('Jumlah produk yang dibeli tidak boleh kurang dari 1');
-        return
-    }
-
-    loadOrder.value = true;
-    try {
-        const { userRef, getRef } = useCheckRef();
-        await getRef(refId.value);
-        if (!userRef.value) {
-            toast.error("Link referral tidak valid");
-            return
-        }
-
-        const getCode = generateCode()
-
-        await addDoc(collection(db, 'transactions'), {
-            code: getCode,
-            ...orderData,
-            ref_id: refId.value,
-            product: [
-                {
-                    ...data
-                }
-            ],
-            status: 0,
-            created_at: serverTimestamp(),
-        });
-        router.push('/transaction/' + getCode);
-        closeOrderModal();
-    } catch (error) {
-        toast.error('Gagal membeli produk ini: ');
-    } finally {
-        loadOrder.value = false;
-    }
-}
-
 const addToCart = () => {
     if (data.qty < 1) {
         toast.error('Jumlah produk tidak boleh kurang dari 1');
@@ -264,19 +134,19 @@ const addToCart = () => {
     toast.success('Produk berhasil ditambahkan ke keranjang');
 }
 
-const generateCode = () => {
-    const randomNumber = Math.floor(10000 + Math.random() * 90000);
+const orderToCart = () => {
+    if (data.qty < 1) {
+        toast.error('Jumlah produk tidak boleh kurang dari 1');
+        return
+    }
 
-    const date = new Date();
+    const cartStore = useCartStore();
+    cartStore.addToCart({ id: data.id, qty: data.qty });
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const formattedDate = `${year}${month}${day}`;
-
-    return `CS${formattedDate}${randomNumber}`;
+    localStorage.setItem('buyItem', data.id);
+    router.push({ name: 'Cart' });
 }
+
 </script>
 <style scoped>
 .product-qty input::-webkit-outer-spin-button,
@@ -293,5 +163,4 @@ const generateCode = () => {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
 </style>
