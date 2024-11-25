@@ -1,43 +1,46 @@
 <template>
     <user-layout>
-        <div class="loader-custom mx-auto" v-if="loading"></div>
+        <div class="pa-6">
+            <div class="loader-custom mx-auto" v-if="loading"></div>
 
-        <v-row no-gutters v-if="!loading && checkData">
-            <v-col cols="12" sm="12" md="5" lg="4">
-                <v-sheet class="ma-2 pa-3 bg-transparent">
-                    <div class="mx-auto">
-                        <CarouselThumb :img="data.images" />
-                    </div>
-                </v-sheet>
-            </v-col>
-            <v-col cols="12" sm="12" md="6">
-                <v-sheet class="mt-6 ml-4 bg-transparent">
-                    <h1>{{ data.name }}</h1>
-                    <h2>{{ formatRupiah(data.price) }}</h2>
+            <v-row no-gutters v-if="!loading && checkData">
+                <v-col cols="12" sm="12" md="5" lg="4">
+                    <v-sheet class="ma-2 pa-3 bg-transparent">
+                        <div class="mx-auto">
+                            <CarouselThumb :img="data.images" />
+                        </div>
+                    </v-sheet>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                    <v-sheet class="mt-6 ml-4 bg-transparent">
+                        <h1>{{ data.name }}</h1>
+                        <h2>{{ formatRupiah(data.price) }}</h2>
 
-                    <p class="text-h6 mt-4">Deskripsi</p>
-                    <p>{{ data.description }}</p>
+                        <p class="text-h6 mt-4">Deskripsi</p>
+                        <p>{{ data.description }}</p>
 
-                    <div class="product-qty my-4">
-                        <button class="mr-2" @click="changeQty('min')">
-                            <v-icon icon="mdi-minus"></v-icon>
-                        </button>
-                        <input type="number" min="0" v-model="data.qty">
-                        <button class="ml-2" @click="changeQty('plus')">
-                            <v-icon icon="mdi-plus"></v-icon>
-                        </button>
-                    </div>
+                        <div class="product-qty my-4">
+                            <button class="mr-2" @click="changeQty('min')">
+                                <v-icon icon="mdi-minus"></v-icon>
+                            </button>
+                            <input type="number" min="0" v-model="data.qty">
+                            <button class="ml-2" @click="changeQty('plus')">
+                                <v-icon icon="mdi-plus"></v-icon>
+                            </button>
+                        </div>
 
-                    <v-btn @click="orderToCart" class="mt-4 mr-2" color="orange-accent-4" variant="flat">Beli</v-btn>
-                    <v-btn @click="addToCart" class="mt-4" color="indigo" variant="flat">Tambah Ke Keranjang</v-btn>
-                </v-sheet>
-            </v-col>
-        </v-row>
+                        <v-btn @click="orderToCart" class="mt-4 mr-2" color="orange-accent-4"
+                            variant="flat">Beli</v-btn>
+                        <v-btn @click="addToCart" class="mt-4" color="indigo" variant="flat">Tambah Ke Keranjang</v-btn>
+                    </v-sheet>
+                </v-col>
+            </v-row>
 
-        <div class="text-center" v-if="!loading && !checkData">
-            <h4 class="text-h4">Whoops, 404</h4>
-            <h5 class="text-h5">Product not found</h5>
-            <p class="text-subtitle-1">The product you were looking for does not exist</p>
+            <div class="text-center" v-if="!loading && !checkData">
+                <h4 class="text-h4">Whoops, 404</h4>
+                <h5 class="text-h5">Product not found</h5>
+                <p class="text-subtitle-1">The product you were looking for does not exist</p>
+            </div>
         </div>
     </user-layout>
 </template>

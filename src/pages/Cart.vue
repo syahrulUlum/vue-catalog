@@ -1,54 +1,57 @@
 <template>
     <user-layout>
-        <h1 class="text-h4">Keranjang Anda</h1>
-        <div class="loader-custom mx-auto" v-if="loading"></div>
+        <div class="pa-6">
+            <h1 class="text-h4">Keranjang Anda</h1>
+            <div class="loader-custom mx-auto" v-if="loading"></div>
 
-        <div class="mt-4" style="margin-left: -15px; margin-right: -15px;" v-if="data.length > 0 && !loading">
-            <div class="d-flex mt-6" style="height: 90px;" v-for="(item, index) in data" :key="item.id">
-                <div class="h-100 d-flex" style="width: 150px;">
-                    <v-checkbox @change="changeSelectedItem(item)" class="d-flex" v-model="selectedValue" :value="item.id"></v-checkbox>
-                    <div class="image-container">
-                        <img :src="item.images[0]" alt="image" />
+            <div class="mt-4" style="margin-left: -15px; margin-right: -15px;" v-if="data.length > 0 && !loading">
+                <div class="d-flex mt-6" style="height: 90px;" v-for="(item, index) in data" :key="item.id">
+                    <div class="h-100 d-flex" style="width: 150px;">
+                        <v-checkbox @change="changeSelectedItem(item)" class="d-flex" v-model="selectedValue"
+                            :value="item.id"></v-checkbox>
+                        <div class="image-container">
+                            <img :src="item.images[0]" alt="image" />
+                        </div>
                     </div>
-                </div>
-                <div class="h-100 w-100 ml-2 d-sm-flex border-b">
-                    <div class="h-xs-50 h-sm-100 w-100 w-sm-50 overflow-hidden">
-                        <p class="text-sm-h6">
-                            <b>{{ item.name }}</b>
-                        </p>
-                        <p class="text-sm-h6">{{ formatRupiah(item.price) }}</p>
-                    </div>
-                    <div class="h-xs-50 h-sm-100 d-flex align-center justify-space-between pa-1 pa-sm-3 w-100">
-                        <div class="product-qty">
-                            <button class="mr-2" @click="changeQty('min', index)">
-                                <v-icon icon="mdi-minus"></v-icon>
-                            </button>
-                            <input type="number" min="0" :value="item.qty" readonly>
-                            <button class="ml-2" @click="changeQty('plus', index)">
-                                <v-icon icon="mdi-plus"></v-icon>
+                    <div class="h-100 w-100 ml-2 d-sm-flex border-b">
+                        <div class="h-xs-50 h-sm-100 w-100 w-sm-50 overflow-hidden">
+                            <p class="text-sm-h6">
+                                <b>{{ item.name }}</b>
+                            </p>
+                            <p class="text-sm-h6">{{ formatRupiah(item.price) }}</p>
+                        </div>
+                        <div class="h-xs-50 h-sm-100 d-flex align-center justify-space-between pa-1 pa-sm-3 w-100">
+                            <div class="product-qty">
+                                <button class="mr-2" @click="changeQty('min', index)">
+                                    <v-icon icon="mdi-minus"></v-icon>
+                                </button>
+                                <input type="number" min="0" :value="item.qty" readonly>
+                                <button class="ml-2" @click="changeQty('plus', index)">
+                                    <v-icon icon="mdi-plus"></v-icon>
+                                </button>
+                            </div>
+                            <p class="d-none d-sm-inline">
+                                {{ formatRupiah(item.price * item.qty) }}
+                            </p>
+                            <button @click="deleteCart(item.id)">
+                                <span class="text-red-darken-3">
+                                    <v-icon icon="mdi-delete"></v-icon>
+                                </span>
                             </button>
                         </div>
-                        <p class="d-none d-sm-inline">
-                            {{ formatRupiah(item.price * item.qty) }}
-                        </p>
-                        <button @click="deleteCart(item.id)">
-                            <span class="text-red-darken-3">
-                                <v-icon icon="mdi-delete"></v-icon>
-                            </span>
-                        </button>
                     </div>
                 </div>
+                <div class="d-flex text-h6 font-weight-bold justify-space-between pa-3">
+                    <p>Total Harga</p>
+                    <p>{{ formatRupiah(totalPrice()) }}</p>
+                </div>
+                <div class="text-right">
+                    <v-btn class="mt-4" color="orange-accent-4" @click="openOrderModal" variant="flat">Checkout</v-btn>
+                </div>
             </div>
-            <div class="d-flex text-h6 font-weight-bold justify-space-between pa-3">
-                <p>Total Harga</p>
-                <p>{{ formatRupiah(totalPrice()) }}</p>
-            </div>
-            <div class="text-right">
-                <v-btn class="mt-4" color="orange-accent-4" @click="openOrderModal" variant="flat">Checkout</v-btn>
-            </div>
-        </div>
 
-        <h4 v-if="data.length < 1 && !loading" class="mt-4 text-h6">Keranjang Anda Kosong</h4>
+            <h4 v-if="data.length < 1 && !loading" class="mt-4 text-h6">Keranjang Anda Kosong</h4>
+        </div>
     </user-layout>
 
     <!-- Start Modal -->
@@ -149,7 +152,7 @@ const changeSelectedItem = (item) => {
 }
 
 
-onMounted(async() => {
+onMounted(async () => {
     const getRefId = localStorage.getItem('ref_id');
     refId.value = getRefId
     if (!refId.value) {
@@ -158,7 +161,7 @@ onMounted(async() => {
     await getData()
 
     const getBuyItem = localStorage.getItem('buyItem');
-    if(getBuyItem){
+    if (getBuyItem) {
         const selectedData = data.value.filter(item => item.id == getBuyItem);
         selectedItems.value = selectedData;
         selectedValue.value.push(getBuyItem);

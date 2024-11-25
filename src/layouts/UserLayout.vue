@@ -21,7 +21,7 @@
         </template>
     </v-app-bar>
     <v-main class="h-auto">
-        <div class="pa-6 h-auto">
+        <div class="h-auto">
             <slot />
         </div>
     </v-main>
