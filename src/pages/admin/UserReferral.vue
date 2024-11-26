@@ -5,21 +5,23 @@
             <v-icon icon="mdi-chevron-right"></v-icon>
             <span>List</span>
         </div>
-        <div class="d-flex align-center justify-space-between">
             <h4 class="text-h4 font-weight-bold">Referral</h4>
-            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-                @click="openAddModal()">Tambah Referral</v-btn>
-        </div>
 
         <!-- Table -->
-        <div class="d-flex align-center pe-2 mt-5 mb-2">
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
-
-            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                variant="outlined" class="bg-white" flat hide-details single-line></v-text-field>
-        </div>
+        <v-row class="pe-2 mt-5 mb-2 justify-space-between ga-1" no-gutters>
+            <v-col cols="12" sm="4">
+                <v-sheet>
+                    <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                        variant="outlined" flat hide-details single-line></v-text-field>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="2">
+                <v-sheet class="text-end bg-transparent">
+                    <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
+                @click="openAddModal()" style="height: 2.8em;" block>Tambah Referral</v-btn>
+                </v-sheet>
+            </v-col>
+        </v-row>
 
         <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg overflow-hidden" v-model:search="search" :filter-keys="['name', 'link']">
             <template v-slot:loading>

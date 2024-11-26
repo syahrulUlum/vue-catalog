@@ -8,33 +8,39 @@
         <div class="d-flex align-center justify-space-between">
             <h4 class="text-h4 font-weight-bold">Transaksi</h4>
         </div>
-        <div class="d-flex align-center pe-2 mt-5 mb-2">
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
+        <v-row class="pe-2 mt-5 mb-2 justify-space-between ga-1" no-gutters>
+            <v-col cols="12" sm="4">
+                <v-sheet>
+                    <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                        variant="outlined" flat hide-details single-line></v-text-field>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="2">
+                <v-sheet class="text-end bg-transparent">
+                    <v-btn class="text-none font-weight-medium" style="height: 2.8em;" color="orange-accent-4" variant="flat" block>
+                        Export
 
-            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                variant="outlined" class="bg-white mr-4" flat hide-details single-line></v-text-field>
+                        <v-menu activator="parent">
+                            <v-list>
+                                <v-list-item>
+                                    <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                        @click="exportToExcel('1')">Hari Ini</v-btn>
+                                    <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                        @click="exportToExcel('7')">7
+                                        Hari Yang Lalu</v-btn>
+                                    <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                        @click="exportToExcel('30')">30
+                                        Hari Yang Lalu</v-btn>
+                                    <v-btn block class="text-subtitle-1 rounded-0 justify-start"
+                                        @click="exportToExcel('all')">Semuanya</v-btn>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-btn>
+                </v-sheet>
+            </v-col>
+        </v-row>
 
-            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat">
-                Export Excel
-
-                <v-menu activator="parent">
-                    <v-list>
-                        <v-list-item>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start"
-                                @click="exportToExcel('1')">Hari Ini</v-btn>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('7')">7
-                                Hari Yang Lalu</v-btn>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start" @click="exportToExcel('30')">30
-                                Hari Yang Lalu</v-btn>
-                            <v-btn block class="text-subtitle-1 rounded-0 justify-start"
-                                @click="exportToExcel('all')">Semuanya</v-btn>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
-            </v-btn>
-            
-        </div>
         <v-data-table :loading="loading" v-model:search="search" :headers="headerTable" :filter-keys="['code']"
             :items="items" class="border rounded-lg overflow-hidden">
             <template v-slot:loading>
@@ -168,10 +174,10 @@
                 <v-card-actions class="pr-6 pb-4">
                     <v-btn color="amber-darken-4 ma-1" variant="flat" text="tutup" @click="closeModalDetail"></v-btn>
                     <template v-if="data.status == 0">
-                        <v-btn class="ma-1 bg-red" prepend-icon="mdi-cancel" text="Batal"
-                            @click="openModalAction(2)" variant="flat"></v-btn>
-                        <v-btn class="ma-1 bg-green" @click="openModalAction(1)" text="Selesai"
-                            prepend-icon="mdi-check" variant="flat"></v-btn>
+                        <v-btn class="ma-1 bg-red" prepend-icon="mdi-cancel" text="Batal" @click="openModalAction(2)"
+                            variant="flat"></v-btn>
+                        <v-btn class="ma-1 bg-green" @click="openModalAction(1)" text="Selesai" prepend-icon="mdi-check"
+                            variant="flat"></v-btn>
                     </template>
                 </v-card-actions>
             </v-card>
@@ -331,7 +337,7 @@ const router = useRouter()
 const trxAction = async (status) => {
     loadAction.value = true;
     const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
-    
+
     await checkSessionExpiration();
     await checkAuthStatus();
 

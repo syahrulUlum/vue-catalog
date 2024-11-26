@@ -5,23 +5,25 @@
       <v-icon icon="mdi-chevron-right"></v-icon>
       <span>List</span>
     </div>
-    <div class="d-flex align-center justify-space-between">
       <h4 class="text-h4 font-weight-bold">Produk</h4>
 
-      <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-        :to="{ name: 'ProductCreate' }">Tambah Produk</v-btn>
-    </div>
+    <v-row class="pe-2 mt-5 mb-2 justify-space-between ga-1" no-gutters>
+            <v-col cols="12" sm="4">
+                <v-sheet>
+                    <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                        variant="outlined" flat hide-details single-line></v-text-field>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="2">
+                <v-sheet class="text-end bg-transparent">
+                  <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
+                  :to="{ name: 'ProductCreate' }" style="height: 2.8em;" block>Tambah Produk</v-btn>
+                </v-sheet>
+            </v-col>
+        </v-row>
 
-    <div class="d-flex align-center pe-2 mt-5 mb-2">
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-
-      <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-        variant="outlined" class="bg-white"flat hide-details single-line></v-text-field>
-    </div>
-
-    <v-data-table :loading="loading" :headers="headerTable" v-model:search="search" :filter-keys="['product_code', 'name']" :items="items" class="border rounded-lg overflow-hidden">
+    <v-data-table :loading="loading" :headers="headerTable" v-model:search="search"
+      :filter-keys="['product_code', 'name']" :items="items" class="border rounded-lg overflow-hidden">
       <template v-slot:loading>
         <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
       </template>
