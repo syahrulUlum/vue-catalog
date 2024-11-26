@@ -1,18 +1,27 @@
 <template>
     <main-layout>
         <div class="d-flex align-center text-subtitle-1 text-medium-emphasis">
-            <span>User Referral</span>
+            <span>Referral</span>
             <v-icon icon="mdi-chevron-right"></v-icon>
             <span>List</span>
         </div>
         <div class="d-flex align-center justify-space-between">
-            <h4 class="text-h4 font-weight-bold">User Referral</h4>
+            <h4 class="text-h4 font-weight-bold">Referral</h4>
             <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-                @click="openAddModal()">Tambah User Referral</v-btn>
+                @click="openAddModal()">Tambah Referral</v-btn>
         </div>
 
         <!-- Table -->
-        <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg mt-5">
+        <div class="d-flex align-center pe-2 mt-5 mb-2">
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+
+            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                variant="outlined" class="bg-white" flat hide-details single-line></v-text-field>
+        </div>
+
+        <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg overflow-hidden" v-model:search="search" :filter-keys="['name', 'link']">
             <template v-slot:loading>
                 <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
             </template>
@@ -21,23 +30,18 @@
                 {{ items.indexOf(item) + 1 }}
             </template>
 
-            <template v-slot:item.link="{ item }">
-                {{ getDomain + item.link }}
-            </template>
 
             <template v-slot:item.action="{ item }">
                 <div class="d-inline">
                     <button class="ma-1" @click="openEditModal(item)">
                         <span class="text-orange-darken-3">
                             <v-icon icon="mdi-square-edit-outline"></v-icon>
-                            <span>Edit</span>
                         </span>
                     </button>
                     |
                     <button class="ma-1" @click="openDeleteModal(item.id, item.name)">
                         <span class="text-red-darken-3">
                             <v-icon icon="mdi-delete"></v-icon>
-                            <span>Hapus</span>
                         </span>
                     </button>
 
@@ -49,19 +53,23 @@
 
         <!-- Start Modal -->
         <v-dialog v-model="dialog" max-width="600" persistent>
-            <v-card :title="`${textModal} User Referral`">
+            <v-card :title="`${textModal} Referral`">
                 <v-card-text>
                     <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
-                        label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+                        label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"
+                        class="mb-3"></v-text-field>
 
                     <v-text-field v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
-                        label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
+                        label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"
+                        class="mb-3"></v-text-field>
 
                     <v-text-field v-model="data.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
-                        label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
+                        label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"
+                        class="mb-3"></v-text-field>
 
                     <v-textarea v-model="data.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
-                        label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
+                        label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"
+                        class="mb-3"></v-textarea>
 
                     <!-- disable jika edit -->
                     <v-text-field label="Link Referral" v-model="data.link" :prefix="getDomain" readonly
@@ -72,12 +80,12 @@
                         @input="v$.link.$touch" :prefix="getDomain" v-else></v-text-field>
 
                 </v-card-text>
-                <v-card-actions class="pa-6">
+                <v-card-actions class="px-6 pb-4">
                     <v-spacer></v-spacer>
 
-                    <v-btn text="Tutup" variant="plain" @click="closeModal" :disabled="loadSave"></v-btn>
+                    <v-btn text="Batal" variant="plain" @click="closeModal" :disabled="loadSave"></v-btn>
 
-                    <v-btn color="amber-darken-4" :loading="loadSave" :text="textModal" variant="flat"
+                    <v-btn color="amber-darken-4" :loading="loadSave" text="Simpan" variant="flat"
                         @click="saveUserReferral" :disabled="loadSave"></v-btn>
                 </v-card-actions>
             </v-card>
@@ -90,7 +98,7 @@
                 <v-card-text>
                     <div class="text-center pa-2">
                         <v-icon color="warning" icon="mdi-alert-circle" size="60"></v-icon>
-                        <p class="mt-2">Apakah anda yakin ingin menghapus User Referral <strong>{{ nameDel
+                        <p class="mt-2">Apakah anda yakin ingin menghapus Referral <strong>{{ nameDel
                                 }}</strong> ?</p>
                     </div>
                 </v-card-text>
@@ -257,7 +265,7 @@ const saveUserReferral = async () => {
                 telp: data.telp,
                 address: data.address
             });
-            toast.success('User Referral berhasil diperbarui');
+            toast.success('Referral berhasil diperbarui');
         } else {
             const queryUserLink = query(collection(db, 'user_referrals'), where('link', '==', data.link));
             const getUserLink = await getDocs(queryUserLink);
@@ -272,7 +280,7 @@ const saveUserReferral = async () => {
                     link: data.link,
                     created_at: serverTimestamp(),
                 });
-                toast.success('User Referral berhasil ditambahkan');
+                toast.success('Referral berhasil ditambahkan');
                 closeModal();
                 fetchUserRef();
             } else {
@@ -281,7 +289,7 @@ const saveUserReferral = async () => {
 
         }
     } catch (error) {
-        toast.error('Gagal menyimpan User Referral');
+        toast.error('Gagal menyimpan Referral');
     } finally {
         loadSave.value = false;
     }
@@ -301,16 +309,16 @@ const deleteUserReferral = async () => {
         }
         try {
             await deleteDoc(doc(db, 'user_referrals', idDel.value));
-            toast.success('User Referral berhasil dihapus');
+            toast.success('Referral berhasil dihapus');
             fetchUserRef();
             deleteModal.value = false
         } catch (error) {
-            toast.error('Gagal menghapus User Referral');
+            toast.error('Gagal menghapus Referral');
         } finally {
             loadDelete.value = false;
         }
     } else {
-        toast.error('User Referral tidak ditemukan');
+        toast.error('Referral tidak ditemukan');
         loadDelete.value = false;
         deleteModal.value = false
     }
@@ -325,11 +333,9 @@ const loading = ref(false);
 const headerTable = ref([
     { key: 'no', sortable: false, title: 'No' },
     { key: 'name', title: 'Nama' },
-    { key: 'email', title: 'Email' },
-    { key: 'address', title: 'Alamat' },
     { key: 'telp', title: 'No Hp' },
-    { key: 'link', title: 'link' },
-    { key: 'action', title: 'Aksi', sortable: false },
+    { key: 'link', title: 'Id Link Referral' },
+    { key: 'action', title: 'Aksi', sortable: false, align: 'end' },
 
 ])
 
@@ -343,7 +349,7 @@ const fetchUserRef = async () => {
         items.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         loading.value = false;
     } catch (error) {
-        toast.error('Gagal mengambil data User Referral');
+        toast.error('Gagal mengambil data Referral');
         loading.value = false;
     }
 };

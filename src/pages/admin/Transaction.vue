@@ -7,6 +7,14 @@
         </div>
         <div class="d-flex align-center justify-space-between">
             <h4 class="text-h4 font-weight-bold">Transaksi</h4>
+        </div>
+        <div class="d-flex align-center pe-2 mt-5 mb-2">
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+
+            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                variant="outlined" class="bg-white mr-4" flat hide-details single-line></v-text-field>
+
             <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat">
                 Export Excel
 
@@ -25,9 +33,10 @@
                     </v-list>
                 </v-menu>
             </v-btn>
+            
         </div>
-        <v-data-table :loading="loading" v-model:search="search" :headers="headerTable"
-            :filter-keys="['code', 'ref_id']" :items="items" class="border rounded-lg mt-5">
+        <v-data-table :loading="loading" v-model:search="search" :headers="headerTable" :filter-keys="['code']"
+            :items="items" class="border rounded-lg overflow-hidden">
             <template v-slot:loading>
                 <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
             </template>
@@ -56,25 +65,8 @@
                     <button class="ma-1" @click="openModalDetail(item)">
                         <span class="text-indigo-darken-2">
                             <v-icon icon="mdi-list-box-outline"></v-icon>
-                            <span>Detail</span>
                         </span>
                     </button>
-                    <template v-if="item.status == 0">
-                        |
-                        <button class="ma-1" @click="openModalAction(1, item.id)">
-                            <span class="text-green">
-                                <v-icon icon="mdi-check"></v-icon>
-                                <span>Selesai</span>
-                            </span>
-                        </button>
-                        |
-                        <button class="ma-1" @click="openModalAction(2, item.id)">
-                            <span class="text-red">
-                                <v-icon icon="mdi-cancel"></v-icon>
-                                <span>Batal</span>
-                            </span>
-                        </button>
-                    </template>
                 </div>
             </template>
         </v-data-table>
@@ -174,7 +166,13 @@
                     </table>
                 </v-card-text>
                 <v-card-actions class="pr-6 pb-4">
-                    <v-btn color="amber-darken-4" variant="flat" text="tutup" @click="closeModalDetail"></v-btn>
+                    <v-btn color="amber-darken-4 ma-1" variant="flat" text="tutup" @click="closeModalDetail"></v-btn>
+                    <template v-if="data.status == 0">
+                        <v-btn class="ma-1 bg-red" prepend-icon="mdi-cancel" text="Batal"
+                            @click="openModalAction(2)" variant="flat"></v-btn>
+                        <v-btn class="ma-1 bg-green" @click="openModalAction(1)" text="Selesai"
+                            prepend-icon="mdi-check" variant="flat"></v-btn>
+                    </template>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -198,7 +196,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- End Modal Delete -->
+        <!-- End Modal Action -->
     </main-layout>
 </template>
 
@@ -216,11 +214,10 @@ const search = ref("");
 const loading = ref(false);
 const headerTable = ref([
     { key: 'no', sortable: false, title: 'No' },
-    { key: 'code', title: 'Kode' },
-    { key: 'ref_id', title: 'Kode Referral' },
+    { key: 'code', title: 'Kode Transaksi' },
     { key: 'created_at', title: 'Waktu Transaksi' },
     { key: 'status', title: 'Status' },
-    { key: 'action', title: 'Aksi', sortable: true, align: 'center' },
+    { key: 'action', title: 'Aksi', sortable: true, align: 'end' },
 ])
 
 const formatRupiah = (amount) => {
@@ -263,7 +260,7 @@ const formatDate = (date) => {
 
     const formattedDate = date.toLocaleDateString('id-ID', {
         day: '2-digit',
-        month: 'long',
+        month: '2-digit',
         year: 'numeric',
     });
 
@@ -291,6 +288,7 @@ const data = reactive({
     created_at: null
 });
 
+const idAction = ref(null);
 const modalDetail = ref(false);
 const openModalDetail = (item) => {
     modalDetail.value = true;
@@ -303,6 +301,7 @@ const openModalDetail = (item) => {
     data.status = item.status;
     data.product = item.product;
     data.created_at = item.created_at;
+    idAction.value = item.id;
 }
 
 const closeModalDetail = () => {
@@ -316,25 +315,23 @@ const closeModalDetail = () => {
     data.product = [];
     data.created_at = null;
     modalDetail.value = false;
-
+    idAction.value = null;
 }
 
 const actionModal = ref(false);
 const statusAction = ref(null);
 const loadAction = ref(false);
-const idAction = ref(null);
-const openModalAction = (status, id) => {
+const openModalAction = (status) => {
     actionModal.value = true;
     statusAction.value = status;
     loadAction.value = false;
-    idAction.value = id;
 }
 
 const router = useRouter()
 const trxAction = async (status) => {
     loadAction.value = true;
     const { user, checkSessionExpiration, checkAuthStatus } = useAuth();
-
+    
     await checkSessionExpiration();
     await checkAuthStatus();
 
@@ -360,6 +357,7 @@ const trxAction = async (status) => {
     } finally {
         loadAction.value = false;
         actionModal.value = false;
+        closeModalDetail()
     }
 }
 
@@ -407,6 +405,7 @@ const fetchDataForExcel = async () => {
 
 const filterProduct = (product) => {
     const filteredProduct = product.map(item => ({
+        product_code: item.product_code,
         name: item.name,
         price: item.price,
         qty: item.qty

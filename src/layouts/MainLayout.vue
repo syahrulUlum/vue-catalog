@@ -51,7 +51,7 @@
     </v-list>
   </v-navigation-drawer>
 
-  <v-main class="h-auto">
+  <v-main class="h-auto overflow-hidden">
     <div class="pa-6 h-auto">
       <slot />
     </div>

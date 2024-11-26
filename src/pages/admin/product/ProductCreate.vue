@@ -7,23 +7,22 @@
         </div>
         <div class="d-flex align-center justify-space-between">
             <h4 class="text-h4 font-weight-bold">Tambah Produk</h4>
-
-            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-                :to="{ name: 'Product' }">Kembali</v-btn>
         </div>
 
         <div class="mt-5">
-            <v-text-field v-model="data.product_code" :error-messages="v$.product_code.$errors.map((e) => e.$message)" label="Kode Produk"
-                required @blur="v$.product_code.$touch" @input="v$.product_code.$touch"></v-text-field>
+            <v-text-field v-model="data.product_code" :error-messages="v$.product_code.$errors.map((e) => e.$message)"
+                label="Kode Produk" required @blur="v$.product_code.$touch" @input="v$.product_code.$touch"
+                class="mb-3"></v-text-field>
 
             <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
-                required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+                required @blur="v$.name.$touch" @input="v$.name.$touch" class="mb-3"></v-text-field>
 
             <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)" label="Harga"
-                required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
+                required @blur="v$.price.$touch" @input="v$.price.$touch" class="mb-3"></v-text-field>
 
             <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
-                label="Deskripsi" required @blur="v$.description.$touch" @input="v$.description.$touch"></v-textarea>
+                label="Deskripsi" required @blur="v$.description.$touch" @input="v$.description.$touch"
+                class="mb-3"></v-textarea>
 
             <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
             <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
@@ -35,8 +34,12 @@
                 </div>
             </v-scroll-y-transition>
         </div>
-        <v-btn color="orange-accent-4" text="Tambah Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
+        <div class="d-flex justify-end mt-3">
+            <v-btn color="indigo-accent-4" text="Batal" variant="flat" class="mt-3 mr-3" :to="{ name: 'Product' }"></v-btn>
+
+        <v-btn color="orange-accent-4" text="Simpan Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
             :loading="loadCreate" class="mt-3"></v-btn>
+        </div>
     </main-layout>
 </template>
 <script setup>

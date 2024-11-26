@@ -60,16 +60,16 @@
             <v-card-text>
                 <v-alert class="mb-3" text="Isi data berikut untuk membeli produk" type="warning"></v-alert>
                 <v-text-field v-model="orderData.name" :error-messages="v$.name.$errors.map((e) => e.$message)"
-                    label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+                    label="Nama" required @blur="v$.name.$touch" @input="v$.name.$touch" class="mb-3"></v-text-field>
 
                 <v-text-field v-model="orderData.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
-                    label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
+                    label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch" class="mb-3"></v-text-field>
 
                 <v-text-field v-model="orderData.telp" :error-messages="v$.telp.$errors.map((e) => e.$message)"
-                    label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch"></v-text-field>
+                    label="No Hp" required @blur="v$.telp.$touch" @input="v$.telp.$touch" class="mb-3"></v-text-field>
 
                 <v-textarea v-model="orderData.address" :error-messages="v$.address.$errors.map((e) => e.$message)"
-                    label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch"></v-textarea>
+                    label="Alamat" required @blur="v$.address.$touch" @input="v$.address.$touch" ></v-textarea>
             </v-card-text>
             <v-card-actions class="pa-6">
                 <v-spacer></v-spacer>

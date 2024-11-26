@@ -21,7 +21,7 @@
         variant="outlined" class="bg-white"flat hide-details single-line></v-text-field>
     </div>
 
-    <v-data-table :loading="loading" :headers="headerTable" v-model:search="search" :filter-keys="['product_code', 'name']" :items="items" class="border rounded-lg ">
+    <v-data-table :loading="loading" :headers="headerTable" v-model:search="search" :filter-keys="['product_code', 'name']" :items="items" class="border rounded-lg overflow-hidden">
       <template v-slot:loading>
         <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
       </template>
