@@ -4,15 +4,15 @@
             <p class="text-h4 text-center mb-4">Katalog</p>
             <v-text-field density="compact" placeholder="Enter your email" prepend-inner-icon="mdi-email-outline"
                 variant="outlined" v-model="data.email" :error-messages="v$.email.$errors.map((e) => e.$message)"
-                label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch"></v-text-field>
+                label="Email" required @blur="v$.email.$touch" @input="v$.email.$touch" class="mb-3"></v-text-field>
 
             <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
                 density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline"
                 variant="outlined" @click:append-inner="visible = !visible" v-model="data.password"
                 :error-messages="v$.password.$errors.map((e) => e.$message)" label="Password" required
-                @blur="v$.password.$touch" @input="v$.password.$touch"></v-text-field>
+                @blur="v$.password.$touch" @input="v$.password.$touch" class="mb-3"></v-text-field >
 
-            <v-btn :loading="loading" class="mb-8" color="blue" size="large" variant="tonal" block @click="handleLogin">
+            <v-btn :loading="loading" class="mb-8" color="blue" size="large" variant="flat" block @click="handleLogin">
                 Log In
             </v-btn>
 

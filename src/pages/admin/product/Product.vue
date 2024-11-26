@@ -12,7 +12,16 @@
         :to="{ name: 'ProductCreate' }">Tambah Produk</v-btn>
     </div>
 
-    <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg mt-5">
+    <div class="d-flex align-center pe-2 mt-5 mb-2">
+      <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
+
+      <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+        variant="outlined" class="bg-white"flat hide-details single-line></v-text-field>
+    </div>
+
+    <v-data-table :loading="loading" :headers="headerTable" v-model:search="search" :filter-keys="['product_code', 'name']" :items="items" class="border rounded-lg ">
       <template v-slot:loading>
         <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
       </template>
@@ -30,14 +39,12 @@
           <router-link class="ma-1 text-decoration-none" :to="{ name: 'ProductEdit', params: { id: item.id } }">
             <span class="text-orange-darken-3">
               <v-icon icon="mdi-square-edit-outline"></v-icon>
-              <span>Edit</span>
             </span>
           </router-link>
           |
           <button class="ma-1" @click="openDeleteModal(item.id, item.name)">
             <span class="text-red-darken-3">
               <v-icon icon="mdi-delete"></v-icon>
-              <span>Hapus</span>
             </span>
           </button>
         </div>
@@ -79,9 +86,10 @@ const search = ref("");
 const loading = ref(false);
 const headerTable = ref([
   { key: 'no', sortable: false, title: 'No' },
+  { key: 'product_code', title: 'Kode Produk' },
   { key: 'name', title: 'Nama' },
   { key: 'price', title: 'Harga' },
-  { key: 'action', title: 'Aksi', sortable: false, align: 'center' },
+  { key: 'action', title: 'Aksi', sortable: false, align: 'end' },
 
 ])
 

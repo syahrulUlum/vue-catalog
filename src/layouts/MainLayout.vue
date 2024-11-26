@@ -1,7 +1,7 @@
 <template>
   <v-app-bar :elevation="2" prominent>
     <template v-slot:prepend>
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" v-if="width <= 768"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     </template>
     <v-app-bar-title class="font-weight-bold">Katalog</v-app-bar-title>
     <template v-slot:append>
@@ -18,8 +18,8 @@
       </button>
     </template>
   </v-app-bar>
-  <v-navigation-drawer v-model="drawer" class="bg-transparent border-0 mt-5" permanent>
-    <v-list density="compact" nav>
+  <v-navigation-drawer v-model="drawer" class="bg-transparent border" permanent>
+    <v-list class="mt-5" density="compact" nav>
       <v-list-item :active="$route.name == 'Dashboard'" class="text-grey-darken-2" value="dashboard"
         :to="{ name: 'Dashboard' }">
         <div :class="$route.name == 'Dashboard' ? 'text-orange' : ''">

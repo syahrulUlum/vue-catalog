@@ -13,6 +13,9 @@
         </div>
 
         <div class="mt-5">
+            <v-text-field v-model="data.product_code" :error-messages="v$.product_code.$errors.map((e) => e.$message)" label="Kode Produk"
+                required @blur="v$.product_code.$touch" @input="v$.product_code.$touch"></v-text-field>
+
             <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
                 required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
@@ -50,6 +53,7 @@ import { useRouter } from 'vue-router';
 import useAuth from '@/composables/useAuth';
 
 const data = reactive({
+    product_code: "",
     name: "",
     price: null,
     description: "",
@@ -57,6 +61,7 @@ const data = reactive({
 });
 
 const rules = reactive({
+    product_code: { required },
     name: { required },
     price: { required, numeric },
     description: { required },
@@ -101,6 +106,7 @@ const createProduct = async () => {
 
         // Simpan data ke Firestore
         await addDoc(collection(db, 'products'), {
+            product_code: data.product_code,
             name: data.name,
             price: data.price,
             description: data.description,
@@ -108,6 +114,7 @@ const createProduct = async () => {
             created_at: serverTimestamp(),
         });
 
+        data.product_code = '';
         data.name = '';
         data.price = null;
         data.description = '';
