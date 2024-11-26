@@ -12,14 +12,26 @@
 
                 <!-- Display image preview if a file has been selected -->
                 <img v-if="file.preview" :src="file.preview" class="preview-image" style="display: block;" />
+
+                <div v-if="file.preview" class=" position-absolute top-0 right-0">
+                    <button class="text-blue  mb-1" @click="chooseAnotherFile(index)">
+                        <v-icon icon="mdi-square-edit-outline"></v-icon>
+                    </button>
+                    <button class="text-red " @click="removeFile(index)">
+                        <v-icon icon="mdi-delete"></v-icon>
+                    </button>
+                </div>
             </div>
 
             <!-- Choose another file, remove file -->
-            <div v-if="file.preview" class="actions">
-                <button class="edit-btn" @click="chooseAnotherFile(index)">Pilih File Lain</button>
-                <button class="delete-btn" @click="removeFile(index)">Hapus File</button>
-
-            </div>
+            <!-- <div v-if="file.preview" class="actions">
+                <button class="edit-btn" @click="chooseAnotherFile(index)">
+                    <v-icon icon="mdi-square-edit-outline"></v-icon>
+                </button>
+                <button class="delete-btn" @click="removeFile(index)">
+                    <v-icon icon="mdi-delete"></v-icon>
+                </button>
+            </div> -->
         </div>
     </div>
 </template>
