@@ -20,9 +20,10 @@
             <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)" label="Harga"
                 required @blur="v$.price.$touch" @input="v$.price.$touch" class="mb-3"></v-text-field>
 
-            <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
-                label="Deskripsi" required @blur="v$.description.$touch" @input="v$.description.$touch"
-                class="mb-3"></v-textarea>
+            <div class="mb-3">
+                <p class="text-subtitle-1 ms-2 text-grey-darken-3">Deskripsi</p>
+                <div style="height: 200px;" ref="editorRef"></div>
+            </div>
 
             <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
             <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
@@ -35,10 +36,11 @@
             </v-scroll-y-transition>
         </div>
         <div class="d-flex justify-end mt-3">
-            <v-btn color="indigo-accent-4" text="Batal" variant="flat" class="mt-3 mr-3" :to="{ name: 'Product' }"></v-btn>
+            <v-btn color="indigo-accent-4" text="Batal" variant="flat" class="mt-3 mr-3"
+                :to="{ name: 'Product' }"></v-btn>
 
-        <v-btn color="orange-accent-4" text="Simpan Produk" variant="flat" @click="createProduct" :disabled="loadCreate"
-            :loading="loadCreate" class="mt-3"></v-btn>
+            <v-btn color="orange-accent-4" text="Simpan Produk" variant="flat" @click="createProduct"
+                :disabled="loadCreate" :loading="loadCreate" class="mt-3"></v-btn>
         </div>
     </main-layout>
 </template>
@@ -46,14 +48,16 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import useVuelidate from '@vuelidate/core';
 import { numeric, required } from "@vuelidate/validators";
-import { reactive, ref } from 'vue';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { onMounted, reactive, ref, watch } from 'vue';
+import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'vue3-toastify';
 import FileUpload from '@/components/FileUpload.vue';
 import { useRouter } from 'vue-router';
 import useAuth from '@/composables/useAuth';
+import Quill from 'quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const data = reactive({
     product_code: "",
@@ -67,11 +71,31 @@ const rules = reactive({
     product_code: { required },
     name: { required },
     price: { required, numeric },
-    description: { required },
     images: { required }
 });
 
 const v$ = useVuelidate(rules, data);
+
+const editorRef = ref(null)
+onMounted(() => {
+    if (editorRef.value) {
+        const quill = new Quill(editorRef.value, {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        })
+
+        quill.on('text-change', () => {
+            data.description = quill.root.innerHTML
+        })
+    }
+})
 
 const handleUpdatedFiles = (files) => {
     data.images = files.filter(f => f.file);
@@ -96,8 +120,16 @@ const createProduct = async () => {
     }
 
     try {
-        let imageUrls = [];
+        // Cek Kode produk
+        const queryProductCode = query(collection(db, 'products'), where('product_code', '==', data.product_code));
+        const getProductCode = await getDocs(queryProductCode);
+        if (!getProductCode.empty) {
+            toast.error('Kode produk sudah digunakan');
+            loadCreate.value = false;
+            return
+        }
 
+        let imageUrls = [];
         // Upload setiap file ke Firebase Storage
         for (const file of data.images) {
             const extensionFile = file.file.name.split('.').pop()
@@ -117,18 +149,13 @@ const createProduct = async () => {
             created_at: serverTimestamp(),
         });
 
-        data.product_code = '';
-        data.name = '';
-        data.price = null;
-        data.description = '';
-        data.images = null;
         toast.success('Produk berhasil disimpan');
         setTimeout(() => {
             router.push({ name: 'Product' });
+            loadCreate.value = false;
         }, 3000);
     } catch (error) {
         toast.error('Gagal menyimpan produk:', error);
-    } finally {
         loadCreate.value = false;
     }
 };

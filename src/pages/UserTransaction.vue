@@ -7,10 +7,7 @@
                 <h2 class="text-h4 text-medium-emphasis mt-4">Transaksi Berhasil</h2>
                 <h4 class="text-h6 mt-4">Kode Transaksi: <b>{{ id }}</b></h4>
                 <p>Silahkan hubungi admin agar transaksi anda mendapatkan prioritas utama pelayanan kami</p>
-                <v-btn class="text-none font-weight-medium mt-6" color="orange-accent-4" variant="flat" text="Hubungi Admin"
-                    prepend-icon="mdi-whatsapp"
-                    :href="`https://wa.me/${contact}?text=Halo,%20saya%20telah%20membeli%20produk%20dengan%20kode%20transaksi%20${id},%20mohon%20segera%20diproses`"
-                    target="_blank" rel="noopener noreferrer">
+                <v-btn class="text-none font-weight-medium mt-6" color="orange-accent-4" variant="flat" text="Hubungi Admin" prepend-icon="mdi-whatsapp" :href="`https://wa.me/${contact}?text=Halo,%20saya%20telah%20membeli%20produk%20dengan%20kode%20transaksi%20${id},%20mohon%20segera%20diproses`" target="_blank" rel="noopener noreferrer">
                 </v-btn>
             </div>
 

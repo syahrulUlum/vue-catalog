@@ -17,7 +17,8 @@
             </v-col>
             <v-col cols="12" sm="2">
                 <v-sheet class="text-end bg-transparent">
-                    <v-btn class="text-none font-weight-medium" style="height: 2.8em;" color="orange-accent-4" variant="flat" block>
+                    <v-btn class="text-none font-weight-medium" style="height: 2.8em;" color="orange-accent-4"
+                        variant="flat" block>
                         Export
 
                         <v-menu activator="parent">
@@ -82,93 +83,99 @@
             <v-card>
                 <v-card-text>
                     <table class="styled-table">
-                        <tr>
-                            <td>Kode Transaksi</td>
-                            <td>:</td>
-                            <td>{{ data.code }}</td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid black;" colspan="3"><b>Data Pembeli</b></td>
-                        </tr>
-                        <tr>
-                            <td>Nama</td>
-                            <td>:</td>
-                            <td>{{ data.name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>:</td>
-                            <td>{{ data.email }}</td>
-                        </tr>
-                        <tr>
-                            <td>No Hp</td>
-                            <td>:</td>
-                            <td>{{ data.telp }}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat</td>
-                            <td>:</td>
-                            <td>{{ data.address }}</td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid black;" colspan="3"><b>Produk yang dibeli</b></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <div class="overflow-x-auto">
-                                    <table class="w-100 mb-4 text-center" style="border: 1px sold #ccc;">
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="text-subtitle-2 text-medium-emphasis">Qty</td>
-                                            <td class="text-subtitle-2 text-medium-emphasis">Total</td>
-                                        </tr>
-                                        <tr class="text-subtitle-2" v-for="product in data.product" :key="product.id">
-                                            <td width="10%" class="border-t">
-                                                <img :src="product.images[0]" width="50px">
-                                            </td>
-                                            <td class="text-left border-t">
-                                                <b>{{ product.name }}</b>
-                                                <p>{{ formatRupiah(product.price) }}</p>
-                                            </td>
-                                            <td class="border-t">{{ product.qty }}</td>
-                                            <td class="text-right border-t">{{ formatRupiah(product.qty * product.price)
-                                                }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid black;" colspan="3"><b>Data Lainnya</b></td>
-                        </tr>
-                        <tr>
-                            <td>Total Harga</td>
-                            <td>:</td>
-                            <td>{{ formatRupiah(totalPrice(data.product)) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tanggal Pembelian</td>
-                            <td>:</td>
-                            <td>{{ formatDate(data.created_at) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kode Referral</td>
-                            <td>:</td>
-                            <td>{{ data.ref_id }}</td>
-                        </tr>
-                        <tr>
-                            <td>Status Pembelian</td>
-                            <td>:</td>
-                            <td>
-                                <span v-if="data.status == 0"
-                                    class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
-                                <span v-if="data.status == 1"
-                                    class="text-green d-inline-block font-weight-bold">Selesai</span>
-                                <span v-if="data.status == 2"
-                                    class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <td>Kode Transaksi</td>
+                                <td>:</td>
+                                <td>{{ data.code }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border-top: 1px solid black;" colspan="3"><b>Data Pembeli</b></td>
+                            </tr>
+                            <tr>
+                                <td>Nama</td>
+                                <td>:</td>
+                                <td>{{ data.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>:</td>
+                                <td>{{ data.email }}</td>
+                            </tr>
+                            <tr>
+                                <td>No Hp</td>
+                                <td>:</td>
+                                <td>{{ data.telp }}</td>
+                            </tr>
+                            <tr>
+                                <td>Alamat</td>
+                                <td>:</td>
+                                <td>{{ data.address }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border-top: 1px solid black;" colspan="3"><b>Produk yang dibeli</b></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-100 mb-4 text-center" style="border: 1px sold #ccc;">
+                                            <tbody>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="text-subtitle-2 text-medium-emphasis">Qty</td>
+                                                    <td class="text-subtitle-2 text-medium-emphasis">Total</td>
+                                                </tr>
+                                                <tr class="text-subtitle-2" v-for="product in data.product"
+                                                    :key="product.id">
+                                                    <td width="10%" class="border-t">
+                                                        <img :src="product.images[0]" width="50px">
+                                                    </td>
+                                                    <td class="text-left border-t">
+                                                        <b>{{ product.name }}</b>
+                                                        <p>{{ formatRupiah(product.price) }}</p>
+                                                    </td>
+                                                    <td class="border-t">{{ product.qty }}</td>
+                                                    <td class="text-right border-t">{{ formatRupiah(product.qty *
+                                                        product.price)
+                                                        }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border-top: 1px solid black;" colspan="3"><b>Data Lainnya</b></td>
+                            </tr>
+                            <tr>
+                                <td>Total Harga</td>
+                                <td>:</td>
+                                <td>{{ formatRupiah(totalPrice(data.product)) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tanggal Pembelian</td>
+                                <td>:</td>
+                                <td>{{ formatDate(data.created_at) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Kode Referral</td>
+                                <td>:</td>
+                                <td>{{ data.ref_id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Status Pembelian</td>
+                                <td>:</td>
+                                <td>
+                                    <span v-if="data.status == 0"
+                                        class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
+                                    <span v-if="data.status == 1"
+                                        class="text-green d-inline-block font-weight-bold">Selesai</span>
+                                    <span v-if="data.status == 2"
+                                        class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </v-card-text>
                 <v-card-actions class="pr-6 pb-4">
