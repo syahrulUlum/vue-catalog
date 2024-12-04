@@ -17,7 +17,7 @@
                         <h2>{{ formatRupiah(data.price) }}</h2>
 
                         <p class="text-h6 mt-4">Deskripsi</p>
-                        <p>{{ data.description }}</p>
+                        <p v-html="data.description"></p>
 
                         <div class="product-qty my-4">
                             <button class="mr-2" @click="changeQty('min')">

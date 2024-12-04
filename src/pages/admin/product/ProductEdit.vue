@@ -12,14 +12,18 @@
                 :to="{ name: 'Product' }">Kembali</v-btn>
         </div>
         <div class="mt-5">
+            <v-text-field v-model="data.product_code" label="Kode Produk" readonly class="mb-3"></v-text-field>
+
             <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
                 required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
 
             <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)" label="Harga"
                 required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
 
-            <v-textarea v-model="data.description" :error-messages="v$.description.$errors.map((e) => e.$message)"
-                label="Deskripsi" required @blur="v$.description.$touch" @input="v$.description.$touch"></v-textarea>
+            <div class="mb-3">
+                <p class="text-subtitle-1 ms-2 text-grey-darken-3">Deskripsi</p>
+                <div style="height: 200px;" ref="editorRef"></div>
+            </div>
 
             <p class="text-subtitle-1 ms-2 text-grey-darken-3">Gambar</p>
             <v-card variant="outlined" class="pa-3" :color="v$.images.$errors.length > 0 ? 'red-darken-4' : ''">
@@ -39,7 +43,7 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import useVuelidate from '@vuelidate/core';
 import { numeric, required } from "@vuelidate/validators";
-import { onMounted, reactive, ref, watchEffect } from 'vue';
+import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import { collection, getDoc, doc, updateDoc } from 'firebase/firestore';
 import { db, storage } from "@/firebaseConfig";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -47,8 +51,11 @@ import { toast } from 'vue3-toastify';
 import FileUpload from '@/components/FileUpload.vue';
 import { useRoute, useRouter } from 'vue-router';
 import useAuth from '@/composables/useAuth';
+import Quill from 'quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const data = reactive({
+    product_code: "",
     name: "",
     price: null,
     description: "",
@@ -58,7 +65,6 @@ const data = reactive({
 const rules = reactive({
     name: { required },
     price: { required, numeric },
-    description: { required },
     images: { required }
 });
 
@@ -75,6 +81,7 @@ const getData = async () => {
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+        data.product_code = docSnap.data().product_code;
         data.name = docSnap.data().name;
         data.price = docSnap.data().price;
         data.description = docSnap.data().description;
@@ -86,8 +93,34 @@ const getData = async () => {
         router.push({ name: 'NotFound' })
     }
 };
-onMounted(() => {
-    getData();
+
+const editorRef = ref(null)
+const quillInstance = ref(null)
+onMounted(async () => {
+    await getData();
+
+    if (editorRef.value) {
+        quillInstance.value = new Quill(editorRef.value, {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        })
+
+        if (data.description) {
+            quillInstance.value.root.innerHTML = data.description
+        }
+
+        quillInstance.value.on('text-change', () => {
+            data.description = quillInstance.value.root.innerHTML
+        })
+
+    }
 })
 
 const router = useRouter()
@@ -130,6 +163,8 @@ const updateProduct = async () => {
                     } else {
                         imageUrls.push(data.images[i].preview);
                     }
+                } else {
+                    imageUrls.push(data.images[i]);
                 }
             }
         }
@@ -151,17 +186,13 @@ const updateProduct = async () => {
             images: imageUrls,
         });
 
-        data.name = '';
-        data.price = null;
-        data.description = '';
-        data.images = null;
         toast.success('Produk berhasil diperbarui');
         setTimeout(() => {
             router.push({ name: 'Product' });
+            loadUpdate.value = false;
         }, 3000);
     } catch (error) {
         toast.error('Gagal memperbarui produk:', error);
-    } finally {
         loadUpdate.value = false;
     }
 };
