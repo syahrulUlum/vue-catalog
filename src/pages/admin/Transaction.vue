@@ -113,6 +113,36 @@
                                 <td>{{ data.address }}</td>
                             </tr>
                             <tr>
+                                <td style="border-top: 1px solid black;" colspan="3"><b>Data Lainnya</b></td>
+                            </tr>
+                            <tr>
+                                <td>Total Harga</td>
+                                <td>:</td>
+                                <td>{{ formatRupiah(totalPrice(data.product)) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tanggal Pembelian</td>
+                                <td>:</td>
+                                <td>{{ formatDate(data.created_at) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Kode Referral</td>
+                                <td>:</td>
+                                <td>{{ data.ref_id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Status Pembelian</td>
+                                <td>:</td>
+                                <td>
+                                    <span v-if="data.status == 0"
+                                        class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
+                                    <span v-if="data.status == 1"
+                                        class="text-green d-inline-block font-weight-bold">Selesai</span>
+                                    <span v-if="data.status == 2"
+                                        class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td style="border-top: 1px solid black;" colspan="3"><b>Produk yang dibeli</b></td>
                             </tr>
                             <tr>
@@ -143,36 +173,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="border-top: 1px solid black;" colspan="3"><b>Data Lainnya</b></td>
-                            </tr>
-                            <tr>
-                                <td>Total Harga</td>
-                                <td>:</td>
-                                <td>{{ formatRupiah(totalPrice(data.product)) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Tanggal Pembelian</td>
-                                <td>:</td>
-                                <td>{{ formatDate(data.created_at) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Kode Referral</td>
-                                <td>:</td>
-                                <td>{{ data.ref_id }}</td>
-                            </tr>
-                            <tr>
-                                <td>Status Pembelian</td>
-                                <td>:</td>
-                                <td>
-                                    <span v-if="data.status == 0"
-                                        class="text-indigo-darken-2 d-inline-block font-weight-bold">Diproses</span>
-                                    <span v-if="data.status == 1"
-                                        class="text-green d-inline-block font-weight-bold">Selesai</span>
-                                    <span v-if="data.status == 2"
-                                        class="text-red d-inline-block font-weight-bold">Dibatalkan</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -416,14 +416,14 @@ const fetchDataForExcel = async () => {
     return { dataExcel, startDate, endDate };
 };
 
-const filterProduct = (product) => {
-    const filteredProduct = product.map(item => ({
-        product_code: item.product_code,
-        name: item.name,
-        price: item.price,
-        qty: item.qty
-    }));
-    return JSON.stringify(filteredProduct);
+const filterProduct = (product, type) => {
+    if (type === 'qty') {
+        return product.reduce((total, item) => total + item.qty, 0)
+    }
+
+    if (type === 'total') {
+        return product.reduce((total, item) => total + 1, 0)
+    }
 }
 
 const prepareDataForExcel = (dataExcel) => {
@@ -433,7 +433,8 @@ const prepareDataForExcel = (dataExcel) => {
         'Email': item.email || 'N/A',
         'No Hp': item.telp || 'N/A',
         'Alamat': item.address || 'N/A',
-        'Produk': filterProduct(item.product) || 'N/A',
+        'Total Produk': filterProduct(item.product, 'total') || 'N/A',
+        'Total Qty': filterProduct(item.product, 'qty') || 'N/A',
         'Total Harga': totalPrice(item.product) || 'N/A',
         'Tanggal Pembelian': new Date(item.created_at?.seconds * 1000).toLocaleString() || 'N/A',
         'Kode Referral': item.ref_id || 'N/A',

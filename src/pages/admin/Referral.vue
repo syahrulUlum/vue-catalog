@@ -5,7 +5,7 @@
             <v-icon icon="mdi-chevron-right"></v-icon>
             <span>List</span>
         </div>
-            <h4 class="text-h4 font-weight-bold">Referral</h4>
+        <h4 class="text-h4 font-weight-bold">Referral</h4>
 
         <!-- Table -->
         <v-row class="pe-2 mt-5 mb-2 justify-space-between ga-1" no-gutters>
@@ -18,12 +18,13 @@
             <v-col cols="12" sm="2">
                 <v-sheet class="text-end bg-transparent">
                     <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-                @click="openAddModal()" style="height: 2.8em;" block>Tambah Referral</v-btn>
+                        @click="openAddModal()" style="height: 2.8em;" block>Tambah Referral</v-btn>
                 </v-sheet>
             </v-col>
         </v-row>
 
-        <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg overflow-hidden" v-model:search="search" :filter-keys="['name', 'link']">
+        <v-data-table :loading="loading" :headers="headerTable" :items="items" class="border rounded-lg overflow-hidden"
+            v-model:search="search" :filter-keys="['name', 'link']">
             <template v-slot:loading>
                 <v-skeleton-loader v-for="j in 5" :key="j" type="text"></v-skeleton-loader>
             </template>
@@ -32,6 +33,16 @@
                 {{ items.indexOf(item) + 1 }}
             </template>
 
+            <template v-slot:item.link="{ item }">
+                {{ item.link }}
+                <button class="ma-1" @click="copyToClipboard(item.link)">
+                    <small>
+                        <span class="text-blue-grey-darken-3">
+                            <v-icon icon="mdi-content-copy"></v-icon>
+                        </span>
+                    </small>
+                </button>
+            </template>
 
             <template v-slot:item.action="{ item }">
                 <div class="d-inline">
@@ -88,7 +99,7 @@
                     <v-btn text="Batal" variant="plain" @click="closeModal" :disabled="loadSave"></v-btn>
 
                     <v-btn color="amber-darken-4" :loading="loadSave" text="Simpan" variant="flat"
-                        @click="saveUserReferral" :disabled="loadSave"></v-btn>
+                        @click="saveReferralerral" :disabled="loadSave"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -110,7 +121,7 @@
                     <v-btn text="tidak" variant="plain" @click="closeDeleteModal" :disabled="loadDelete"></v-btn>
 
                     <v-btn color="deep-orange-accent-4" :loading="loadDelete" text="ya" variant="flat"
-                        @click="deleteUserReferral" :disabled="loadDelete"></v-btn>
+                        @click="deleteReferralerral" :disabled="loadDelete"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -225,7 +236,7 @@ const getDomain = computed(() => {
     const hostname = window.location.hostname;
     const port = window.location.port;
 
-    const fullDomain = `${protocol}//${hostname}${port ? `:${port}` : ''}/referral/`;
+    const fullDomain = `${protocol}//${hostname}${port ? `:${port}` : ''}/u/`;
     return fullDomain;
 })
 
@@ -245,7 +256,7 @@ const generateLinkRef = () => {
 const router = useRouter()
 
 const loadSave = ref(false);
-const saveUserReferral = async () => {
+const saveReferralerral = async () => {
     const isValid = await v$.value.$validate();
     if (!isValid) return
 
@@ -260,21 +271,23 @@ const saveUserReferral = async () => {
     }
     try {
         if (data.id) {
-            const UserRef = doc(db, 'user_referrals', data.id);
-            await updateDoc(UserRef, {
+            const Referral = doc(db, 'referral', data.id);
+            await updateDoc(Referral, {
                 name: data.name,
                 email: data.email,
                 telp: data.telp,
                 address: data.address
             });
             toast.success('Referral berhasil diperbarui');
+            closeModal();
+            fetchReferral();
         } else {
-            const queryUserLink = query(collection(db, 'user_referrals'), where('link', '==', data.link));
+            const queryUserLink = query(collection(db, 'referral'), where('link', '==', data.link));
             const getUserLink = await getDocs(queryUserLink);
 
             // cek apakah link sudah ada yang menggunakan
             if (getUserLink.empty) {
-                await addDoc(collection(db, 'user_referrals'), {
+                await addDoc(collection(db, 'referral'), {
                     name: data.name,
                     email: data.email,
                     telp: data.telp,
@@ -284,7 +297,7 @@ const saveUserReferral = async () => {
                 });
                 toast.success('Referral berhasil ditambahkan');
                 closeModal();
-                fetchUserRef();
+                fetchReferral();
             } else {
                 toast.error('Link referral sudah digunakan');
             }
@@ -298,7 +311,7 @@ const saveUserReferral = async () => {
 };
 
 const loadDelete = ref(false);
-const deleteUserReferral = async () => {
+const deleteReferralerral = async () => {
     if (idDel.value) {
         loadDelete.value = true;
         await checkSessionExpiration();
@@ -310,9 +323,9 @@ const deleteUserReferral = async () => {
             router.push({ name: 'Login' });
         }
         try {
-            await deleteDoc(doc(db, 'user_referrals', idDel.value));
+            await deleteDoc(doc(db, 'referral', idDel.value));
             toast.success('Referral berhasil dihapus');
-            fetchUserRef();
+            fetchReferral();
             deleteModal.value = false
         } catch (error) {
             toast.error('Gagal menghapus Referral');
@@ -336,16 +349,16 @@ const headerTable = ref([
     { key: 'no', sortable: false, title: 'No' },
     { key: 'name', title: 'Nama' },
     { key: 'telp', title: 'No Hp' },
-    { key: 'link', title: 'Id Link Referral' },
+    { key: 'link', title: 'Username' },
     { key: 'action', title: 'Aksi', sortable: false, align: 'end' },
 
 ])
 
 const items = ref([]);
-const fetchUserRef = async () => {
+const fetchReferral = async () => {
     loading.value = true;
     try {
-        const q = query(collection(db, 'user_referrals'), orderBy('created_at', 'desc'));
+        const q = query(collection(db, 'referral'), orderBy('created_at', 'desc'));
         const querySnapshot = await getDocs(q);
 
         items.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -357,7 +370,16 @@ const fetchUserRef = async () => {
 };
 
 onMounted(() => {
-    fetchUserRef();
+    fetchReferral();
 })
 // End Get Data
+
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(getDomain.value + text);
+    toast.success('Teks berhasil disalin ke clipboard')
+  } catch (err) {
+    toast.error('Gagal menyalin teks: ', err)
+  }
+}
 </script>

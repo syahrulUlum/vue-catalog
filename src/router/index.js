@@ -4,7 +4,7 @@ import Product from '@/pages/admin/product/Product.vue';
 import ProductCreate from '@/pages/admin/product/ProductCreate.vue';
 import ProductEdit from '@/pages/admin/product/ProductEdit.vue';
 import Login from '@/pages/admin/Login.vue';
-import UserReferral from '@/pages/admin/UserReferral.vue';
+import Referral from '@/pages/admin/Referral.vue';
 import Transaction from '@/pages/admin/Transaction.vue';
 import NotFound from '@/NotFound.vue';
 import Catalog from '@/pages/catalog/Catalog.vue';
@@ -23,19 +23,19 @@ const routes = [
     beforeEnter: requireRef
   },
   {
-    path: '/admin/login',
+    path: '/woYO31lEHOlBaCZcD/login',
     name: 'Login',
     component: Login,
     beforeEnter: requireGuest
   },
   {
-    path: '/admin/dashboard',
+    path: '/woYO31lEHOlBaCZcD/dashboard',
     name: 'Dashboard',
     component: Dashboard,
     beforeEnter: requireAuth
   },
   {
-    path: '/admin/products',
+    path: '/woYO31lEHOlBaCZcD/products',
     children: [
       {
         path: "",
@@ -58,20 +58,20 @@ const routes = [
     ]
   },
   {
-    path: '/admin/user-referrals',
-    name: 'UserReferral',
-    component: UserReferral,
+    path: '/woYO31lEHOlBaCZcD/referrals',
+    name: 'Referral',
+    component: Referral,
     beforeEnter: requireAuth
   },
   {
-    path: '/admin/transactions',
+    path: '/woYO31lEHOlBaCZcD/transactions',
     name: 'Transaction',
     component: Transaction,
     beforeEnter: requireAuth
   },
   {
-    path: '/admin',
-    redirect: '/admin/login'
+    path: '/woYO31lEHOlBaCZcD',
+    redirect: '/woYO31lEHOlBaCZcD/login'
   },
   {
     path: '/catalogs',
@@ -91,8 +91,8 @@ const routes = [
     ],
   },
   {
-    path: '/referral/:id',
-    name: 'Referral',
+    path: '/u/:id',
+    name: 'CheckReferral',
     beforeEnter: async (to, from, next) => {
       const id = to.params.id;
       const { userRef, getRef } = useCheckRef();

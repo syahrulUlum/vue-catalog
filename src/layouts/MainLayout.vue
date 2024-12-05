@@ -18,7 +18,7 @@
       </button>
     </template>
   </v-app-bar>
-  <v-navigation-drawer v-model="drawer" class="bg-transparent border" permanent>
+  <v-navigation-drawer v-model="drawer" class="bg-white" permanent>
     <v-list class="mt-5" density="compact" nav>
       <v-list-item :active="$route.name == 'Dashboard'" class="text-grey-darken-2" value="dashboard"
         :to="{ name: 'Dashboard' }">
@@ -34,11 +34,11 @@
           <span class="text-subtitle-2">Produk</span>
         </div>
       </v-list-item>
-      <v-list-item :active="$route.name == 'UserReferral'" class="text-grey-darken-2" value="user-referral"
-        :to="{ name: 'UserReferral' }">
-        <div :class="$route.name == 'UserReferral' ? 'text-orange' : ''">
+      <v-list-item :active="$route.name == 'Referral'" class="text-grey-darken-2" value="referral"
+        :to="{ name: 'Referral' }">
+        <div :class="$route.name == 'Referral' ? 'text-orange' : ''">
           <v-icon class="mr-3" icon="mdi-account-multiple"></v-icon>
-          <span class="text-subtitle-2">User Referral</span>
+          <span class="text-subtitle-2">Referral</span>
         </div>
       </v-list-item>
       <v-list-item :active="$route.name == 'Transaction'" class="text-grey-darken-2" value="transaction"

@@ -7,18 +7,15 @@
         </div>
         <div class="d-flex align-center justify-space-between">
             <h4 class="text-h4 font-weight-bold">Edit Produk</h4>
-
-            <v-btn class="text-none font-weight-medium" color="orange-accent-4" variant="flat"
-                :to="{ name: 'Product' }">Kembali</v-btn>
         </div>
         <div class="mt-5">
             <v-text-field v-model="data.product_code" label="Kode Produk" readonly class="mb-3"></v-text-field>
 
             <v-text-field v-model="data.name" :error-messages="v$.name.$errors.map((e) => e.$message)" label="Nama"
-                required @blur="v$.name.$touch" @input="v$.name.$touch"></v-text-field>
+                required @blur="v$.name.$touch" @input="v$.name.$touch" class="mb-3"></v-text-field>
 
             <v-text-field v-model="data.price" :error-messages="v$.price.$errors.map((e) => e.$message)" label="Harga"
-                required @blur="v$.price.$touch" @input="v$.price.$touch"></v-text-field>
+                required @blur="v$.price.$touch" @input="v$.price.$touch" class="mb-3"></v-text-field>
 
             <div class="mb-3">
                 <p class="text-subtitle-1 ms-2 text-grey-darken-3">Deskripsi</p>
@@ -34,8 +31,13 @@
                     <small class="text-caption text-red-darken-4">{{ v$.images.$errors[0].$message }}</small>
                 </div>
             </v-scroll-y-transition>
-            <v-btn class="mt-3" color="orange-accent-4" text="Ubah Produk" variant="flat" @click="updateProduct"
-                :disabled="loadUpdate" :loading="loadUpdate"></v-btn>
+        </div>
+        <div class="d-flex justify-end mt-3">
+            <v-btn color="indigo-accent-4" text="Batal" variant="flat" class="mt-3 mr-3"
+                :to="{ name: 'Product' }"></v-btn>
+
+            <v-btn color="orange-accent-4" text="Simpan Produk" variant="flat" @click="updateProduct"
+                :disabled="loadUpdate" :loading="loadUpdate" class="mt-3"></v-btn>
         </div>
     </main-layout>
 </template>
@@ -186,13 +188,13 @@ const updateProduct = async () => {
             images: imageUrls,
         });
 
-        toast.success('Produk berhasil diperbarui');
+        toast.success('Produk berhasil disimpan');
         setTimeout(() => {
             router.push({ name: 'Product' });
             loadUpdate.value = false;
         }, 3000);
     } catch (error) {
-        toast.error('Gagal memperbarui produk:', error);
+        toast.error('Gagal menyimpan produk:', error);
         loadUpdate.value = false;
     }
 };

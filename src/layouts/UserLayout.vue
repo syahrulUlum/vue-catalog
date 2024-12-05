@@ -6,7 +6,7 @@
 
         <template v-slot:append>
             <v-btn class="text-none" stacked
-                :href="`https://wa.me/${contact}?text=Halo,%20saya%20ingin%bertanya`"
+                :href="`https://wa.me/${contact}?text=Halo,%20saya%20ingin%20bertanya`"
                 target="_blank" rel="noopener noreferrer">
                 <v-icon size="x-large">mdi-face-agent</v-icon>
             </v-btn>
@@ -20,7 +20,7 @@
             </router-link>
         </template>
     </v-app-bar>
-    <v-main class="h-auto">
+    <v-main class="h-auto bg-grey-lighten-3">
         <div class="h-auto">
             <slot />
         </div>

@@ -22,7 +22,7 @@ const useCheckRef = () => {
         if (!refId) {
             userRef.value = null
         } else {
-            const linkRef = collection(db, 'user_referrals');
+            const linkRef = collection(db, 'referral');
             const q = query(linkRef, where('link', '==', refId));
             const querySnapshot = await getDocs(q);
 
